@@ -9,12 +9,28 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.gp.q</groupId>
-    <artifactId>q</artifactId>
-    <version>1</version>
+
+    <artifactId>app</artifactId>
+
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <com.gp.api.version>1</com.gp.api.version>
+        <com.gp.q.version>1</com.gp.q.version>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.gp.api</groupId>
+            <artifactId>api</artifactId>
+            <version>${com.gp.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.gp.q</groupId>
+            <artifactId>q</artifactId>
+            <version>${com.gp.q.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>
