@@ -8,5 +8,7 @@ import java.util.UUID;
 
 public interface EndpointService {
     Endpoint createEndpoint(EndpointDto endpointDto);
-    void useEndpoint(UUID endpointId, Map<String, ?> body);
+    Map<String, ?> useEndpoint(UUID endpointId, Map<String, ?> body);
+    Endpoint deleteEndpoint(UUID endpointId);
+
 }

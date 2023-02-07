@@ -25,7 +25,12 @@ public class ApiController {
     }
 
     @PostMapping("/{endpointId}")
-    public void useEndpoint(@PathVariable(name = "endpointId") UUID endpointID, @RequestBody Map<String, ?> body){
+    public Map<String, ?> useEndpoint(@PathVariable(name = "endpointId") UUID endpointID, @RequestBody Map<String, ?> body){
+        return endpointService.useEndpoint(endpointID, body);
+    }
 
+    @DeleteMapping("/{endpointId}")
+    public Endpoint deleteEndpoint(@PathVariable(name = "endpointId") UUID endpointID){
+        return endpointService.deleteEndpoint(endpointID);
     }
 }

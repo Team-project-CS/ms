@@ -17,9 +17,9 @@ public class EndpointEntity {
     @GeneratedValue
     private UUID id;
     private String title;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Map<String, ParamType> bodyTemplate;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Map<String, ParamType> responseTemplate;
     private String description;
 }

@@ -1,29 +1,35 @@
 package com.gp.api.service.impl;
 
+import com.gp.api.exception.throwables.*;
 import com.gp.api.model.Endpoint;
 import com.gp.api.model.EndpointDto;
 import com.gp.api.model.ParamType;
 import com.gp.api.model.entity.EndpointEntity;
 import com.gp.api.repository.EndpointRepository;
 import com.gp.api.service.EndpointService;
+import com.gp.api.service.ResponseGenerator;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+//TODO extract ModelMapper
 @Service
 @Slf4j
 public class EndpointServiceImpl extends ModelMapper implements EndpointService {
 
     @Autowired
     private EndpointRepository endpointRepository;
+    @Autowired
+    private ResponseGenerator responseGenerator;
 
     @PostConstruct
     void excludeTemplateMapping() {
@@ -32,38 +38,94 @@ public class EndpointServiceImpl extends ModelMapper implements EndpointService 
                     mapper.skip(EndpointEntity::setBodyTemplate);
                     mapper.skip(EndpointEntity::setResponseTemplate);
                 });
+        this.createTypeMap(EndpointEntity.class, Endpoint.class)
+                .addMappings(mapper -> {
+                    mapper.skip(Endpoint::setBodyTemplate);
+                    mapper.skip(Endpoint::setResponseTemplate);
+                });
     }
 
     @Override
     public Endpoint createEndpoint(EndpointDto endpointDto) {
         EndpointEntity endpointEntity = this.map(endpointDto, EndpointEntity.class);
         mapTemplates(endpointDto, endpointEntity);
-        return this.map(endpointRepository.save(endpointEntity), Endpoint.class);
+        EndpointEntity savedEndpoint = endpointRepository.save(endpointEntity);
+        Endpoint endpoint = this.map(savedEndpoint, Endpoint.class);
+        endpoint.setBodyTemplate(endpointEntity.getBodyTemplate());
+        endpoint.setResponseTemplate(endpointEntity.getResponseTemplate());
+        return endpoint;
     }
 
+    @SneakyThrows
     private void mapTemplates(EndpointDto endpointDto, EndpointEntity endpointEntity) {
-        Map<String, ParamType> bodyTemplate = mapValuesToParamTypes(endpointDto.getBodyTemplate());
-        Map<String, ParamType> responseTemplate = mapValuesToParamTypes(endpointDto.getResponseTemplate());
+        Map<String, ParamType> bodyTemplate;
+        Map<String, ParamType> responseTemplate;
+        try {
+            bodyTemplate = mapValuesToParamTypes(endpointDto.getBodyTemplate());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidBodyTemplateException(e);
+        }
+        try {
+            responseTemplate = mapValuesToParamTypes(endpointDto.getResponseTemplate());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidResponseTemplateException(e);
+        }
         endpointEntity.setBodyTemplate(bodyTemplate);
         endpointEntity.setResponseTemplate(responseTemplate);
     }
 
     @Override
-    public void useEndpoint(UUID endpointId, Map<String, ?> body) {
-        Endpoint endpoint = this.map(endpointRepository.findById(endpointId), Endpoint.class);
+    @SneakyThrows
+    public Map<String, ?> useEndpoint(UUID endpointId, Map<String, ?> body) {
+        EndpointEntity endpointEntity = endpointRepository.findById(endpointId).orElseThrow(EndpointNotFoundException::new);
+        Endpoint endpoint = this.map(endpointEntity, Endpoint.class);
+        endpoint.setBodyTemplate(endpointEntity.getBodyTemplate());
+        endpoint.setResponseTemplate(endpointEntity.getResponseTemplate());
         checkBodyCompliance(body, endpoint.getBodyTemplate());
+        return responseGenerator.generateResponse(endpoint.getResponseTemplate());
+    }
+
+    @Override
+    public Endpoint deleteEndpoint(UUID endpointId) {
+        EndpointEntity endpointEntity = endpointRepository.findById(endpointId).orElseThrow(IllegalAccessError::new);
+        Endpoint endpoint = this.map(endpointEntity, Endpoint.class);
+        endpointRepository.deleteById(endpointId);
+        return endpoint;
     }
 
     private void checkBodyCompliance(Map<String, ?> body, Map<String, ParamType> bodyTemplate) {
         checkParametersKeys(body, bodyTemplate);
-
+        checkParametersTypes(body, bodyTemplate);
     }
 
+    @SneakyThrows
+    private void checkParametersTypes(Map<String, ?> body, Map<String, ParamType> bodyTemplate) {
+        for (String key : getIntegerParamsKeys(bodyTemplate)) {
+            try {
+                Integer.parseInt(body.get(key).toString());
+            } catch (NumberFormatException e) {
+                throw new ParameterTypeMismatchException(e);
+            }
+        }
+    }
+
+    private List<String> getIntegerParamsKeys(Map<String, ParamType> bodyTemplate) {
+        return bodyTemplate.entrySet().stream()
+                .filter(isIntegerParam())
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
+
+    private static Predicate<Map.Entry<String, ParamType>> isIntegerParam() {
+        return entry -> entry.getValue().equals(ParamType.INTEGER);
+    }
+
+    @SneakyThrows
     private void checkParametersKeys(Map<String, ?> body, Map<String, ParamType> bodyTemplate) {
         boolean templateKeyNotFound = bodyTemplate.keySet().stream()
                 .anyMatch(bodyDoesNotContainsKey(body));
         if (templateKeyNotFound) {
-            throw new IllegalArgumentException();
+            throw new MandatoryParameterNotSpecifiedException();
         }
     }
 
