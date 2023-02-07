@@ -9,6 +9,7 @@ import java.util.UUID;
 public class Endpoint {
     private UUID id;
     private String title;
-    private Map<String, ParamType> template;
+    private Map<String, ParamType> bodyTemplate;
+    private Map<String, ParamType> responseTemplate;
     private String description;
 }

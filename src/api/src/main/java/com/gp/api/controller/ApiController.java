@@ -6,10 +6,10 @@ import com.gp.api.model.EndpointDto;
 import com.gp.api.service.EndpointService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
@@ -22,5 +22,10 @@ public class ApiController {
     @PostMapping
     public Endpoint createEndpoint(@RequestBody EndpointDto endpointDto) {
         return endpointService.createEndpoint(endpointDto);
+    }
+
+    @PostMapping("/{endpointId}")
+    public void useEndpoint(@PathVariable(name = "endpointId") UUID endpointID, @RequestBody Map<String, ?> body){
+
     }
 }

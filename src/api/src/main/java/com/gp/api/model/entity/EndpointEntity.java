@@ -18,6 +18,8 @@ public class EndpointEntity {
     private UUID id;
     private String title;
     @ElementCollection
-    private Map<String, ParamType> template;
+    private Map<String, ParamType> bodyTemplate;
+    @ElementCollection
+    private Map<String, ParamType> responseTemplate;
     private String description;
 }
