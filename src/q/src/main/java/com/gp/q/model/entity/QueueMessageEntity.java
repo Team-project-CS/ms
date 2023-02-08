@@ -13,9 +13,20 @@ import java.util.UUID;
 @Table(name = "queue")
 @Data
 @NoArgsConstructor
-public class QueueEntity {
+public class QueueMessageEntity {
     @Id
     @GeneratedValue
     private UUID id;
     private String name;
+    private String message;
+
+
+    /**
+     * @param name    Имя очереди
+     * @param message Полезная нагрузка
+     */
+    public QueueMessageEntity(String name, String message) {
+        this.name = name;
+        this.message = message;
+    }
 }

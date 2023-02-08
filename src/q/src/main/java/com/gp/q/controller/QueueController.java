@@ -1,13 +1,14 @@
 package com.gp.q.controller;
 
-import com.gp.q.model.dto.QueueCreateParams;
+import com.gp.q.model.dto.QueueMessageDto;
 import com.gp.q.service.QueueService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/queue")
@@ -17,7 +18,14 @@ public class QueueController {
 
     @PostMapping
     @ApiOperation("Create queue")
-    void createQueue(@RequestBody QueueCreateParams queueCreateParams) {
-        queueService.createQueue(queueCreateParams);
+    ResponseEntity<QueueMessageDto> createQueue(@Valid @RequestBody QueueMessageDto queueMessageDto) {
+        QueueMessageDto dto = queueService.createQueue(queueMessageDto);
+        return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping
+    public ResponseEntity<QueueMessageDto> get(@RequestParam String id) {
+        UUID uuid = UUID.fromString(id);
+        return ResponseEntity.ok(queueService.getQueue(uuid));
     }
 }

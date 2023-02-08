@@ -1,4 +1,4 @@
-package com.gp.q;
+package com.gp.q.testcontainers;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
