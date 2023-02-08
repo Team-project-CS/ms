@@ -2,18 +2,20 @@ package com.gp.api.tests;
 
 import com.gp.api.BaseTest;
 import com.gp.api.BaseTestConfig;
-import com.gp.api.exception.throwables.InvalidBodyTemplateException;
-import com.gp.api.exception.throwables.InvalidResponseTemplateException;
+import com.gp.api.exception.throwables.*;
 import com.gp.api.model.Endpoint;
 import com.gp.api.model.EndpointDto;
 import com.gp.api.model.ParamType;
+import com.gp.api.repository.EndpointRepository;
 import com.gp.api.service.EndpointService;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,6 +25,13 @@ public class EndpointServiceTest extends BaseTest {
 
     @Autowired
     private EndpointService endpointService;
+    @Autowired
+    private EndpointRepository endpointRepository;
+
+    @AfterEach
+    void clearDatabase() {
+        endpointRepository.deleteAll();
+    }
 
     @Test
     void createEndpointHappyTestCase() {
@@ -89,5 +98,79 @@ public class EndpointServiceTest extends BaseTest {
                 .build();
 
         assertThrows(InvalidResponseTemplateException.class, () -> endpointService.createEndpoint(endpointDto));
+    }
+
+    @Test
+    void useEndpointHappyTestCase() {
+        Endpoint endpoint = endpointService.createEndpoint(getTestEndpointDto());
+
+        Map<String, ?> body = Map.of(
+                "field1", "some string",
+                "field2", 1024
+        );
+        Map<String, ?> response = endpointService.useEndpoint(endpoint.getId(), body);
+
+        assertTrue(response.containsKey("responseField1"));
+        assertTrue(response.containsKey("responseField2"));
+        assertDoesNotThrow(() -> Integer.parseInt(response.get("responseField2").toString()));
+    }
+
+    @Test
+    void useEndpointNotFoundTestCase() {
+        UUID id = endpointService.createEndpoint(getTestEndpointDto()).getId();
+
+        UUID randomId = UUID.randomUUID();
+        while (randomId.equals(id)) {
+            randomId = UUID.randomUUID();
+        }
+
+        assertThrows(
+                EndpointNotFoundException.class,
+                () -> endpointService.useEndpoint(UUID.randomUUID(), Map.of())
+        );
+    }
+
+    @Test
+    void useEndpointMandatoryParameterNotSpecifiedTestCase() {
+        Endpoint endpoint = endpointService.createEndpoint(getTestEndpointDto());
+
+        Map<String, ?> bodyWithoutMandatoryParameter = Map.of(
+                "field1", "some string"
+        );
+
+        assertThrows(
+                MandatoryParameterNotSpecifiedException.class,
+                () -> endpointService.useEndpoint(endpoint.getId(), bodyWithoutMandatoryParameter)
+        );
+    }
+
+    @Test
+    void useEndpointParameterTypeMismatchTestCase() {
+        Endpoint endpoint = endpointService.createEndpoint(getTestEndpointDto());
+
+        Map<String, ?> bodyWithMismatchedTypeOfParameter = Map.of(
+                "field1", "some string",
+                "field2", "here must be int"
+        );
+
+        assertThrows(
+                ParameterTypeMismatchException.class,
+                () -> endpointService.useEndpoint(endpoint.getId(), bodyWithMismatchedTypeOfParameter)
+        );
+    }
+
+    private EndpointDto getTestEndpointDto() {
+        return EndpointDto.builder()
+                .title("Some test endpoint")
+                .description("Some test description")
+                .bodyTemplate(Map.of(
+                        "field1", "str",
+                        "field2", "int"
+                ))
+                .responseTemplate(Map.of(
+                        "responseField1", "str",
+                        "responseField2", "int"
+                ))
+                .build();
     }
 }

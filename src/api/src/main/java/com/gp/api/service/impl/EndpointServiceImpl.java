@@ -26,6 +26,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class EndpointServiceImpl extends ModelMapper implements EndpointService {
 
+    private static final String BODY_TEMPLATE_HAS_INVALID_TYPES = "Body template has invalid types";
+    private static final String RESPONSE_TEMPLATE_HAS_INVALID_TYPES = "Response template has invalid types";
+    private static final String ENDPOINT_WITH_SPECIFIED_ID_NOT_FOUND = "Endpoint with specified ID not found";
+    private static final String MANDATORY_PARAMETER_NOT_FOUND = "Mandatory parameter not found";
+    private static final String PARAMETER_MISMATCH = "Type of %s parameter is mismatched";
+
     @Autowired
     private EndpointRepository endpointRepository;
     @Autowired
@@ -63,12 +69,12 @@ public class EndpointServiceImpl extends ModelMapper implements EndpointService 
         try {
             bodyTemplate = mapValuesToParamTypes(endpointDto.getBodyTemplate());
         } catch (IllegalArgumentException e) {
-            throw new InvalidBodyTemplateException(e);
+            throw new InvalidBodyTemplateException(BODY_TEMPLATE_HAS_INVALID_TYPES);
         }
         try {
             responseTemplate = mapValuesToParamTypes(endpointDto.getResponseTemplate());
         } catch (IllegalArgumentException e) {
-            throw new InvalidResponseTemplateException(e);
+            throw new InvalidResponseTemplateException(RESPONSE_TEMPLATE_HAS_INVALID_TYPES);
         }
         endpointEntity.setBodyTemplate(bodyTemplate);
         endpointEntity.setResponseTemplate(responseTemplate);
@@ -77,7 +83,8 @@ public class EndpointServiceImpl extends ModelMapper implements EndpointService 
     @Override
     @SneakyThrows
     public Map<String, ?> useEndpoint(UUID endpointId, Map<String, ?> body) {
-        EndpointEntity endpointEntity = endpointRepository.findById(endpointId).orElseThrow(EndpointNotFoundException::new);
+        EndpointEntity endpointEntity = endpointRepository.findById(endpointId)
+                .orElseThrow(() -> new EndpointNotFoundException(ENDPOINT_WITH_SPECIFIED_ID_NOT_FOUND));
         Endpoint endpoint = this.map(endpointEntity, Endpoint.class);
         endpoint.setBodyTemplate(endpointEntity.getBodyTemplate());
         endpoint.setResponseTemplate(endpointEntity.getResponseTemplate());
@@ -104,7 +111,7 @@ public class EndpointServiceImpl extends ModelMapper implements EndpointService 
             try {
                 Integer.parseInt(body.get(key).toString());
             } catch (NumberFormatException e) {
-                throw new ParameterTypeMismatchException(e);
+                throw new ParameterTypeMismatchException(String.format(PARAMETER_MISMATCH, key));
             }
         }
     }
@@ -125,7 +132,7 @@ public class EndpointServiceImpl extends ModelMapper implements EndpointService 
         boolean templateKeyNotFound = bodyTemplate.keySet().stream()
                 .anyMatch(bodyDoesNotContainsKey(body));
         if (templateKeyNotFound) {
-            throw new MandatoryParameterNotSpecifiedException();
+            throw new MandatoryParameterNotSpecifiedException(MANDATORY_PARAMETER_NOT_FOUND);
         }
     }
 
