@@ -23,7 +23,7 @@ public class QueueController {
     }
 
     @GetMapping
-    public ResponseEntity<QueueMessageDto> get(@RequestParam String id) {
-        return ResponseEntity.ok(queueService.getQueue(id));
+    public ResponseEntity<QueueMessageDto> get(@RequestParam String queue) {
+        return ResponseEntity.ok(queueService.getQueue(queue));
     }
 }
