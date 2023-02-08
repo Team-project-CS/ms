@@ -44,7 +44,6 @@ public class RestExceptionHandler {
         final ApiError.ApiErrorBuilder apiErrorBuilder = ApiError.builder()
                 .timestamp(LocalDateTime.now())
                 .path(req.getContextPath() + req.getServletPath());
-        // todo: заменить QueueServiceException
         if (e.getClass().equals(QueueServiceException.class)) {
             return new ResponseEntity<>(apiErrorBuilder.message(e.getMessage()).build(),
                     ((QueueServiceException) e).getStatus());
