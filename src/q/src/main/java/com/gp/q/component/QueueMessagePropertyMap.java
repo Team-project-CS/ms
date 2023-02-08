@@ -8,10 +8,10 @@ import org.modelmapper.PropertyMap;
 public class QueueMessagePropertyMap extends PropertyMap<QueueMessageDto, QueueMessageEntity> {
     @Override
     protected void configure() {
-        using(generateFullname());
+        using(mapping());
     }
 
-    private Converter<QueueMessageDto, QueueMessageEntity> generateFullname() {
+    private Converter<QueueMessageDto, QueueMessageEntity> mapping() {
         return context -> {
             QueueMessageDto dto = context.getSource();
             return new QueueMessageEntity(dto.getName(), dto.getMessage());

@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/queue")
@@ -25,7 +24,6 @@ public class QueueController {
 
     @GetMapping
     public ResponseEntity<QueueMessageDto> get(@RequestParam String id) {
-        UUID uuid = UUID.fromString(id);
-        return ResponseEntity.ok(queueService.getQueue(uuid));
+        return ResponseEntity.ok(queueService.getQueue(id));
     }
 }
