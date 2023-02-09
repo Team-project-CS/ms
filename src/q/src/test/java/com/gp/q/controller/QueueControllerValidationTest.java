@@ -36,6 +36,13 @@ class QueueControllerValidationTest {
             {
             }""";
 
+
+    private static final String wrongJsonFormatReservedName = """
+            {
+              "name": "amq.aaaa",
+              "message": "{/.....}"
+            }""";
+
     @Test
     void createTaskJson() throws Exception {
         mockMvc.perform(post("/queue")
@@ -62,6 +69,16 @@ class QueueControllerValidationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(wrongJsonFormatNoName)
+                )
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    void createTaskWrongJsonReservedName() throws Exception {
+        mockMvc.perform(post("/queue")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(wrongJsonFormatReservedName)
                 )
                 .andExpect(status().is4xxClientError());
     }

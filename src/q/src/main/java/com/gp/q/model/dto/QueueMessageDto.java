@@ -4,8 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 
 @Data
@@ -14,11 +15,19 @@ import javax.validation.constraints.NotNull;
 public class QueueMessageDto {
 
     /**
-     * Имя очереди
+     * Имя очереди.
+     * Не может начинаться с "amq." и быть больше 255 символов.
+     * <br>
+     * <a href="https://www.rabbitmq.com/queues.html#names">Queue names may be up to 255 bytes of UTF-8 characters </a>
      */
-    private @NotBlank String name;
+//    @NotBlank
+    @Pattern(regexp = "^(?!amq[.]).*$")
+//    @Max(255)
+    @Size(min = 1, max = 255)
+    private String name;
     /**
      * Полезная нагрузка
      */
-    private @NotNull String message;
+    @NotNull
+    private String message;
 }

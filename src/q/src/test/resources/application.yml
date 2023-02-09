@@ -2,6 +2,11 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: username
+    password: password
+    driver-class-name: org.h2.Driver
 
   jpa:
     generate-ddl: true
