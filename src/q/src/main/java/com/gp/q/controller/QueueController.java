@@ -44,12 +44,10 @@ public class QueueController {
 
     @DeleteMapping("/list")
     @ApiOperation("delete single queue")
-    ResponseEntity<List<QueuePropertyDto>> deleteQueue() {
-        // todo: delete
-        throw new RuntimeException("not implemented");
+    ResponseEntity<List<QueuePropertyDto>> deleteSingleQueue(@RequestParam String queue) {
+        List<QueuePropertyDto> remaining = managementService.deleteQueue(queue);
+        return ResponseEntity.ok(remaining);
     }
-
-
 
     @PostMapping
     @ApiOperation("post message in queue")

@@ -8,4 +8,7 @@ public interface QueueManagementService {
     List<QueuePropertyDto> createQueues(List<QueuePropertyDto> queues);
 
     List<QueuePropertyDto> getQueues();
+
+    List<QueuePropertyDto> deleteQueue(String queueName);
+
 }

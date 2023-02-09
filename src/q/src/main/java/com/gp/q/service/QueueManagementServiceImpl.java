@@ -34,4 +34,11 @@ public class QueueManagementServiceImpl implements QueueManagementService {
     public List<QueuePropertyDto> getQueues() {
         return queues;
     }
+
+    @Override
+    public List<QueuePropertyDto> deleteQueue(String queueName) {
+        admin.deleteQueue(queueName);
+        queues.removeIf(queue -> queue.getQueueName().equals(queueName));
+        return queues;
+    }
 }
