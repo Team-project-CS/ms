@@ -117,12 +117,7 @@ public class EndpointServiceTest extends BaseTest {
 
     @Test
     void useEndpointNotFoundTestCase() {
-        UUID id = endpointService.createEndpoint(getTestEndpointDto()).getId();
-
-        UUID randomId = UUID.randomUUID();
-        while (randomId.equals(id)) {
-            randomId = UUID.randomUUID();
-        }
+        endpointService.createEndpoint(getTestEndpointDto());
 
         assertThrows(
                 EndpointNotFoundException.class,
@@ -157,6 +152,38 @@ public class EndpointServiceTest extends BaseTest {
                 ParameterTypeMismatchException.class,
                 () -> endpointService.useEndpoint(endpoint.getId(), bodyWithMismatchedTypeOfParameter)
         );
+
+    }
+
+    @Test
+    void deleteEndpointHappyTestCase(){
+        EndpointDto testEndpointDto = getTestEndpointDto();
+
+        endpointService.createEndpoint(testEndpointDto);
+
+        assertThrows(EndpointNotFoundException.class, () -> endpointService.deleteEndpoint(UUID.randomUUID()));
+    }
+
+    @Test
+    void deleteEndpointNotFoundTestCase(){
+        EndpointDto testEndpointDto = getTestEndpointDto();
+
+        Endpoint actualEndpoint = endpointService.createEndpoint(testEndpointDto);
+
+        Endpoint deletedEndpoint = endpointService.deleteEndpoint(actualEndpoint.getId());
+
+        assertEquals(
+                Map.of(
+                        "field1", ParamType.STRING,
+                        "field2", ParamType.INTEGER
+                ),
+                deletedEndpoint.getBodyTemplate());
+        assertEquals(deletedEndpoint.getTitle(), actualEndpoint.getTitle());
+        assertEquals(deletedEndpoint.getDescription(), actualEndpoint.getDescription());
+        assertTrue(deletedEndpoint.getResponseTemplate().containsKey("responseField1"));
+        assertTrue(deletedEndpoint.getResponseTemplate().containsKey("responseField2"));
+        assertEquals(ParamType.STRING, deletedEndpoint.getResponseTemplate().get("responseField1"));
+        assertEquals(ParamType.INTEGER, deletedEndpoint.getResponseTemplate().get("responseField2"));
     }
 
     private EndpointDto getTestEndpointDto() {

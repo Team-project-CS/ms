@@ -1,6 +1,8 @@
 package com.gp.api.service.impl;
 
-import com.gp.api.exception.throwables.*;
+import com.gp.api.exception.throwables.EndpointNotFoundException;
+import com.gp.api.exception.throwables.MandatoryParameterNotSpecifiedException;
+import com.gp.api.exception.throwables.ParameterTypeMismatchException;
 import com.gp.api.model.Endpoint;
 import com.gp.api.model.EndpointDto;
 import com.gp.api.model.ParamType;
@@ -8,26 +10,20 @@ import com.gp.api.model.entity.EndpointEntity;
 import com.gp.api.repository.EndpointRepository;
 import com.gp.api.service.EndpointService;
 import com.gp.api.service.ResponseGenerator;
+import com.gp.api.service.mapper.EndpointMapper;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-//TODO extract ModelMapper
 @Service
-@Slf4j
-public class EndpointServiceImpl extends ModelMapper implements EndpointService {
+public class EndpointServiceImpl implements EndpointService {
 
-    private static final String BODY_TEMPLATE_HAS_INVALID_TYPES = "Body template has invalid types";
-    private static final String RESPONSE_TEMPLATE_HAS_INVALID_TYPES = "Response template has invalid types";
     private static final String ENDPOINT_WITH_SPECIFIED_ID_NOT_FOUND = "Endpoint with specified ID not found";
     private static final String MANDATORY_PARAMETER_NOT_FOUND = "Mandatory parameter not found";
     private static final String PARAMETER_MISMATCH = "Type of %s parameter is mismatched";
@@ -36,48 +32,13 @@ public class EndpointServiceImpl extends ModelMapper implements EndpointService 
     private EndpointRepository endpointRepository;
     @Autowired
     private ResponseGenerator responseGenerator;
-
-    @PostConstruct
-    void excludeTemplateMapping() {
-        this.createTypeMap(EndpointDto.class, EndpointEntity.class)
-                .addMappings(mapper -> {
-                    mapper.skip(EndpointEntity::setBodyTemplate);
-                    mapper.skip(EndpointEntity::setResponseTemplate);
-                });
-        this.createTypeMap(EndpointEntity.class, Endpoint.class)
-                .addMappings(mapper -> {
-                    mapper.skip(Endpoint::setBodyTemplate);
-                    mapper.skip(Endpoint::setResponseTemplate);
-                });
-    }
+    @Autowired
+    private EndpointMapper endpointMapper;
 
     @Override
     public Endpoint createEndpoint(EndpointDto endpointDto) {
-        EndpointEntity endpointEntity = this.map(endpointDto, EndpointEntity.class);
-        mapTemplates(endpointDto, endpointEntity);
-        EndpointEntity savedEndpoint = endpointRepository.save(endpointEntity);
-        Endpoint endpoint = this.map(savedEndpoint, Endpoint.class);
-        endpoint.setBodyTemplate(endpointEntity.getBodyTemplate());
-        endpoint.setResponseTemplate(endpointEntity.getResponseTemplate());
-        return endpoint;
-    }
-
-    @SneakyThrows
-    private void mapTemplates(EndpointDto endpointDto, EndpointEntity endpointEntity) {
-        Map<String, ParamType> bodyTemplate;
-        Map<String, ParamType> responseTemplate;
-        try {
-            bodyTemplate = mapValuesToParamTypes(endpointDto.getBodyTemplate());
-        } catch (IllegalArgumentException e) {
-            throw new InvalidBodyTemplateException(BODY_TEMPLATE_HAS_INVALID_TYPES);
-        }
-        try {
-            responseTemplate = mapValuesToParamTypes(endpointDto.getResponseTemplate());
-        } catch (IllegalArgumentException e) {
-            throw new InvalidResponseTemplateException(RESPONSE_TEMPLATE_HAS_INVALID_TYPES);
-        }
-        endpointEntity.setBodyTemplate(bodyTemplate);
-        endpointEntity.setResponseTemplate(responseTemplate);
+        EndpointEntity endpointEntity = endpointMapper.fromDtoToEntity(endpointDto);
+        return endpointMapper.fromEntityToPojo(endpointRepository.save(endpointEntity));
     }
 
     @Override
@@ -85,19 +46,18 @@ public class EndpointServiceImpl extends ModelMapper implements EndpointService 
     public Map<String, ?> useEndpoint(UUID endpointId, Map<String, ?> body) {
         EndpointEntity endpointEntity = endpointRepository.findById(endpointId)
                 .orElseThrow(() -> new EndpointNotFoundException(ENDPOINT_WITH_SPECIFIED_ID_NOT_FOUND));
-        Endpoint endpoint = this.map(endpointEntity, Endpoint.class);
-        endpoint.setBodyTemplate(endpointEntity.getBodyTemplate());
-        endpoint.setResponseTemplate(endpointEntity.getResponseTemplate());
+        Endpoint endpoint = endpointMapper.fromEntityToPojo(endpointEntity);
         checkBodyCompliance(body, endpoint.getBodyTemplate());
         return responseGenerator.generateResponse(endpoint.getResponseTemplate());
     }
 
     @Override
+    @SneakyThrows
     public Endpoint deleteEndpoint(UUID endpointId) {
-        EndpointEntity endpointEntity = endpointRepository.findById(endpointId).orElseThrow(IllegalAccessError::new);
-        Endpoint endpoint = this.map(endpointEntity, Endpoint.class);
+        EndpointEntity endpointEntity = endpointRepository.findById(endpointId)
+                .orElseThrow(() -> new EndpointNotFoundException(ENDPOINT_WITH_SPECIFIED_ID_NOT_FOUND));
         endpointRepository.deleteById(endpointId);
-        return endpoint;
+        return endpointMapper.fromEntityToPojo(endpointEntity);
     }
 
     private void checkBodyCompliance(Map<String, ?> body, Map<String, ParamType> bodyTemplate) {
@@ -138,19 +98,5 @@ public class EndpointServiceImpl extends ModelMapper implements EndpointService 
 
     private Predicate<String> bodyDoesNotContainsKey(Map<String, ?> body) {
         return key -> !body.containsKey(key);
-    }
-
-    private Map<String, ParamType> mapValuesToParamTypes(Map<String, ?> template) {
-        return template.entrySet().stream()
-                .map(this::castToEntryWithParamType)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
-    private Map.Entry<String, ParamType> castToEntryWithParamType(Map.Entry<String, ?> entry) {
-        return Map.entry(entry.getKey(), getParamTypeEquivalent(entry.getValue()));
-    }
-
-    private ParamType getParamTypeEquivalent(Object value) {
-        return ParamType.getByShortType(value.toString());
     }
 }
