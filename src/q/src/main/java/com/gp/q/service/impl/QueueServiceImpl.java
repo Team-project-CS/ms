@@ -18,14 +18,14 @@ public class QueueServiceImpl implements QueueService {
     private ModelMapper modelMapper;
 
     @Override
-    public QueueMessageDto createQueue(QueueMessageDto dto) {
+    public QueueMessageDto pushInQueue(QueueMessageDto dto) {
         QueueMessageEntity entity = modelMapper.map(dto, QueueMessageEntity.class);
         QueueMessageEntity saved = queueRepository.push(entity);
         return modelMapper.map(saved, QueueMessageDto.class);
     }
 
     @Override
-    public QueueMessageDto getQueue(String queueName) {
+    public QueueMessageDto popFromQueue(String queueName) {
         QueueMessageEntity entity = queueRepository.pop(queueName);
         return modelMapper.map(entity, QueueMessageDto.class);
     }

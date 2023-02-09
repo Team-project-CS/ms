@@ -1,10 +1,12 @@
 package com.gp.q.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -12,7 +14,7 @@ import javax.validation.constraints.Size;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class QueueMessageDto {
+public class QueuePropertyDto {
 
     /**
      * Имя очереди.
@@ -20,13 +22,16 @@ public class QueueMessageDto {
      * <br>
      * <a href="https://www.rabbitmq.com/queues.html#names">Queue names may be up to 255 bytes of UTF-8 characters </a>
      */
-//    @NotBlank
     @Pattern(regexp = "^(?!amq[.]).*$")
     @Size(min = 1, max = 255)
-    private String name;
+    @JsonProperty("queue_name")
+    @JsonAlias("queueName")
+    private String queueName;
+
+
     /**
-     * Полезная нагрузка
+     * Имя создателя очереди.
      */
-    @NotNull
-    private String message;
+    @JsonIgnore
+    private String creator;
 }
