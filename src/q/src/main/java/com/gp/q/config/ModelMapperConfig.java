@@ -1,6 +1,7 @@
 package com.gp.q.config;
 
 import com.gp.q.component.QueueMessagePropertyMap;
+import com.gp.q.component.QueuePropertyMap;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +14,7 @@ public class ModelMapperConfig {
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.addMappings(new QueueMessagePropertyMap());
+        modelMapper.addMappings(new QueuePropertyMap());
         return modelMapper;
     }
 }

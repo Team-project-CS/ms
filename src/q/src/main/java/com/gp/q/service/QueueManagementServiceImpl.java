@@ -1,6 +1,9 @@
 package com.gp.q.service;
 
 import com.gp.q.model.dto.QueuePropertyDto;
+import com.gp.q.model.entity.QueuePropertyEntity;
+import com.gp.q.repository.QueuePropertyRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Queue;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +15,11 @@ import java.util.List;
 @Service
 public class QueueManagementServiceImpl implements QueueManagementService {
 
-    // Можно в бд хранить....
-    private final List<QueuePropertyDto> queues = new ArrayList<>();
+    @Autowired
+    private QueuePropertyRepository db;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Autowired
     private AmqpAdmin admin;
@@ -24,7 +30,7 @@ public class QueueManagementServiceImpl implements QueueManagementService {
         for (var i : queues) {
             if (admin.getQueueInfo(i.getQueueName()) == null) {
                 admin.declareQueue(new Queue(i.getQueueName(), false));
-                this.queues.add(i);
+                db.save(modelMapper.map(i, QueuePropertyEntity.class));
             }
         }
         return queues;
@@ -32,13 +38,15 @@ public class QueueManagementServiceImpl implements QueueManagementService {
 
     @Override
     public List<QueuePropertyDto> getQueues() {
-        return queues;
+        List<QueuePropertyDto> list = new ArrayList<>();
+        db.findAll().forEach(q -> list.add(new QueuePropertyDto(q.getQueueName(), q.getCreator())));
+        return list;
     }
 
     @Override
     public List<QueuePropertyDto> deleteQueue(String queueName) {
         admin.deleteQueue(queueName);
-        queues.removeIf(queue -> queue.getQueueName().equals(queueName));
-        return queues;
+        db.deleteById(queueName);
+        return getQueues();
     }
 }

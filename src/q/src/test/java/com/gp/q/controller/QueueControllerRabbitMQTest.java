@@ -75,6 +75,30 @@ class QueueControllerRabbitMQTest {
 
     @SuppressWarnings("ConstantConditions")
     @Test
+    void queueControllerCreationAndGet() {
+        String queueName = "test_queue_creation_1";
+
+        // Проверяем, что очереди нет
+        QueueInformation queueInfo = admin.getQueueInfo(queueName);
+        Assertions.assertNull(queueInfo);
+
+        // Создаем очередь через контроллер
+        QueuePropertyDto queuePropertyDto = new QueuePropertyDto(queueName, "test");
+        ResponseEntity<List<QueuePropertyDto>> createResponse = controller.createQueues(List.of(queuePropertyDto));
+        Assertions.assertTrue(createResponse.getStatusCode().is2xxSuccessful());
+
+        // Проверяем, что очередь создалась и имена совпадают
+        ResponseEntity<List<QueuePropertyDto>> getResponse = controller.getQueues();
+        Assertions.assertTrue(getResponse.getStatusCode().is2xxSuccessful());
+        Assertions.assertEquals(1, getResponse.getBody().size());
+        Assertions.assertEquals(queuePropertyDto, getResponse.getBody().get(0));
+
+        // Удаляем очередь
+        Assertions.assertTrue(admin.deleteQueue(queueName));
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Test
     void queueCreation3() {
         String queueName2 = "test_queue_creation_3_1";
         String queueName3 = "test_queue_creation_3_2";
@@ -101,32 +125,6 @@ class QueueControllerRabbitMQTest {
         Assertions.assertEquals(queueName4, admin.getQueueInfo(queueName4).getName());
 
         // Удаляем очереди
-        Assertions.assertTrue(admin.deleteQueue(queueName2));
-        Assertions.assertTrue(admin.deleteQueue(queueName3));
-        Assertions.assertTrue(admin.deleteQueue(queueName4));
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    @Test
-    void queueDeletion3() {
-        String queueName2 = "test_queue_deletion_3_1";
-        String queueName3 = "test_queue_creation_3_2";
-        String queueName4 = "test_queue_creation_3_3";
-
-        admin.declareQueue(new Queue(queueName2, false));
-        admin.declareQueue(new Queue(queueName3, false));
-        admin.declareQueue(new Queue(queueName4, false));
-
-        // Проверяем, что очереди создались и имена совпадают
-        Assertions.assertNotNull(admin.getQueueInfo(queueName2));
-        Assertions.assertNotNull(admin.getQueueInfo(queueName3));
-        Assertions.assertNotNull(admin.getQueueInfo(queueName4));
-
-        Assertions.assertEquals(queueName2, admin.getQueueInfo(queueName2).getName());
-        Assertions.assertEquals(queueName3, admin.getQueueInfo(queueName3).getName());
-        Assertions.assertEquals(queueName4, admin.getQueueInfo(queueName4).getName());
-
-        // Удаляем очереди
         Assertions.assertTrue(controller.deleteSingleQueue(queueName2).getStatusCode().is2xxSuccessful());
         Assertions.assertTrue(controller.deleteSingleQueue(queueName3).getStatusCode().is2xxSuccessful());
         Assertions.assertTrue(controller.deleteSingleQueue(queueName4).getStatusCode().is2xxSuccessful());
@@ -136,6 +134,7 @@ class QueueControllerRabbitMQTest {
         Assertions.assertNull(admin.getQueueInfo(queueName3));
         Assertions.assertNull(admin.getQueueInfo(queueName4));
     }
+
 
     @SuppressWarnings("ConstantConditions")
     @Test
