@@ -3,7 +3,10 @@ package com.gp.api.model.entity;
 import com.gp.api.model.Param;
 import com.gp.api.model.types.BodyParamType;
 import com.gp.api.model.types.ResponseParamType;
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
@@ -17,7 +20,6 @@ import java.util.UUID;
 @Setter
 @ToString
 @RequiredArgsConstructor
-@NoArgsConstructor
 public class EndpointEntity {
     @Id
     @GeneratedValue
