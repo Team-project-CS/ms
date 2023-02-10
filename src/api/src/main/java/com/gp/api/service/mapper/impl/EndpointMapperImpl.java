@@ -4,14 +4,18 @@ import com.gp.api.exception.throwables.InvalidBodyTemplateException;
 import com.gp.api.exception.throwables.InvalidResponseTemplateException;
 import com.gp.api.model.Endpoint;
 import com.gp.api.model.EndpointDto;
+import com.gp.api.model.Param;
+import com.gp.api.model.ParamDto;
 import com.gp.api.model.entity.EndpointEntity;
-import com.gp.api.model.types.ParamType;
+import com.gp.api.model.types.BodyParamType;
+import com.gp.api.model.types.ResponseParamType;
 import com.gp.api.service.mapper.EndpointMapper;
 import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -52,15 +56,15 @@ public class EndpointMapperImpl extends ModelMapper implements EndpointMapper {
 
     @SneakyThrows
     private void mapTemplates(EndpointDto endpointDto, EndpointEntity endpointEntity) {
-        Map<String, ParamType> bodyTemplate;
-        Map<String, ParamType> responseTemplate;
+        Map<String, Param<BodyParamType>> bodyTemplate;
+        Map<String, Param<ResponseParamType>> responseTemplate;
         try {
-            bodyTemplate = mapValuesToParamTypes(endpointDto.getBodyTemplate());
+            bodyTemplate = mapBodyTemplate(endpointDto.getBodyTemplate());
         } catch (IllegalArgumentException e) {
             throw new InvalidBodyTemplateException(BODY_TEMPLATE_HAS_INVALID_TYPES);
         }
         try {
-            responseTemplate = mapValuesToParamTypes(endpointDto.getResponseTemplate());
+            responseTemplate = mapResponseTemplate(endpointDto.getResponseTemplate());
         } catch (IllegalArgumentException e) {
             throw new InvalidResponseTemplateException(RESPONSE_TEMPLATE_HAS_INVALID_TYPES);
         }
@@ -68,17 +72,41 @@ public class EndpointMapperImpl extends ModelMapper implements EndpointMapper {
         endpointEntity.setResponseTemplate(responseTemplate);
     }
 
-    private Map<String, ParamType> mapValuesToParamTypes(Map<String, ?> template) {
-        return template.entrySet().stream()
-                .map(this::castToEntryWithParamType)
+    private Map<String, Param<ResponseParamType>> mapResponseTemplate(Map<String, ParamDto> responseTemplate) {
+        return responseTemplate.entrySet().stream()
+                .map(entry -> Map.entry(entry.getKey(), getResponseParamFromDto(entry.getValue())))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    private Map.Entry<String, ParamType> castToEntryWithParamType(Map.Entry<String, ?> entry) {
-        return Map.entry(entry.getKey(), getParamTypeEquivalent(entry.getValue()));
+    private Param<ResponseParamType> getResponseParamFromDto(ParamDto paramDto) {
+        return Param.<ResponseParamType>builder()
+                .type(getResponseParamTypeFromDto(paramDto))
+                .value(paramDto.getValue())
+                .build();
     }
 
-    private ParamType getParamTypeEquivalent(Object value) {
-        return ParamType.getByShortType(value.toString());
+    private ResponseParamType getResponseParamTypeFromDto(ParamDto paramDto) {
+        return Arrays.stream(ResponseParamType.values())
+                .filter(type -> type.getShortType().equals(paramDto.getType()))
+                .findAny().orElseThrow(IllegalArgumentException::new);
+    }
+
+    private Map<String, Param<BodyParamType>> mapBodyTemplate(Map<String, ParamDto> bodyTemplate) {
+        return bodyTemplate.entrySet().stream()
+                .map(entry -> Map.entry(entry.getKey(), getBodyParamFromDto(entry.getValue())))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    private Param<BodyParamType> getBodyParamFromDto(ParamDto paramDto) {
+        return Param.<BodyParamType>builder()
+                .type(getBodyParamTypeFromDto(paramDto))
+                .value(paramDto.getValue())
+                .build();
+    }
+
+    private BodyParamType getBodyParamTypeFromDto(ParamDto paramDto) {
+        return Arrays.stream(BodyParamType.values())
+                .filter(type -> type.getShortType().equals(paramDto.getType()))
+                .findAny().orElseThrow(IllegalArgumentException::new);
     }
 }

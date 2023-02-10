@@ -5,9 +5,13 @@ import com.gp.api.BaseTestConfig;
 import com.gp.api.exception.throwables.*;
 import com.gp.api.model.Endpoint;
 import com.gp.api.model.EndpointDto;
-import com.gp.api.model.types.ParamType;
+import com.gp.api.model.Param;
+import com.gp.api.model.ParamDto;
+import com.gp.api.model.types.BodyParamType;
+import com.gp.api.model.types.ResponseParamType;
 import com.gp.api.repository.EndpointRepository;
 import com.gp.api.service.EndpointService;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +23,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringJUnitConfig({BaseTestConfig.class})
+@Slf4j
 public class EndpointServiceTest extends BaseTest {
 
     @Autowired
@@ -32,170 +37,247 @@ public class EndpointServiceTest extends BaseTest {
     }
 
     @Test
-    void createEndpointHappyTestCase() {
-        EndpointDto endpointDto = EndpointDto.builder()
-                .title("Some test endpoint")
-                .description("Some test description")
-                .bodyTemplate(Map.of(
-                        "field1", "str",
-                        "field2", "int"
-                ))
-                .responseTemplate(Map.of(
-                        "responseField1", "str",
-                        "responseField2", "int"
-                ))
-                .build();
+    void happyCreateEndpointTestCase() {
+        EndpointDto actualEndpoint = getNormalEndpointDto();
 
-        Endpoint actualEndpoint = endpointService.createEndpoint(endpointDto);
+        Endpoint endpoint = endpointService.createEndpoint(actualEndpoint);
 
+        assertEquals(endpoint.getTitle(), actualEndpoint.getTitle());
+        assertEquals(endpoint.getDescription(), actualEndpoint.getDescription());
         assertEquals(
+                endpoint.getBodyTemplate(),
                 Map.of(
-                        "field1", ParamType.STRING,
-                        "field2", ParamType.INTEGER
-                ),
-                actualEndpoint.getBodyTemplate());
-        assertEquals(endpointDto.getTitle(), actualEndpoint.getTitle());
-        assertEquals(endpointDto.getDescription(), actualEndpoint.getDescription());
-        assertTrue(actualEndpoint.getResponseTemplate().containsKey("responseField1"));
-        assertTrue(actualEndpoint.getResponseTemplate().containsKey("responseField2"));
-        assertEquals(ParamType.STRING, actualEndpoint.getResponseTemplate().get("responseField1"));
-        assertEquals(ParamType.INTEGER, actualEndpoint.getResponseTemplate().get("responseField2"));
+                        "bodyStrField", Param.<BodyParamType>builder()
+                                .type(BodyParamType.STRING)
+                                .value("")
+                                .build(),
+                        "bodyIntField", Param.<BodyParamType>builder()
+                                .type(BodyParamType.INTEGER)
+                                .value("")
+                                .build(),
+                        "bodyRegexField", Param.<BodyParamType>builder()
+                                .type(BodyParamType.REGEX)
+                                .value(".{10}")
+                                .build()
+                )
+        );
+        assertEquals(
+                endpoint.getResponseTemplate(),
+                Map.of(
+                        "responseStrField", Param.<ResponseParamType>builder()
+                                .type(ResponseParamType.STRING)
+                                .value("")
+                                .build(),
+                        "responseIntField", Param.<ResponseParamType>builder()
+                                .type(ResponseParamType.INTEGER)
+                                .value("")
+                                .build(),
+                        "responseRegexField", Param.<ResponseParamType>builder()
+                                .type(ResponseParamType.REGEX)
+                                .value(".{7}")
+                                .build(),
+                        "responseFixedField", Param.<ResponseParamType>builder()
+                                .type(ResponseParamType.FIXED)
+                                .value("fixed string")
+                                .build()
+                )
+        );
     }
 
     @Test
-    void createEndpointInvalidBodyTemplateTestCase() {
+    void InvalidBodyParameterCreateEndpointTestCase() {
         EndpointDto endpointDto = EndpointDto.builder()
-                .title("Some test endpoint")
-                .description("Some test description")
-                .bodyTemplate(Map.of(
-                        "field1", "abracadabra",
-                        "field2", "what?"
-                ))
-                .responseTemplate(Map.of(
-                        "responseField1", "str",
-                        "responseField2", "int"
-                ))
+                .bodyTemplate(
+                        Map.of(
+                                "bodyStrField", ParamDto.builder()
+                                        .type("invalid type")
+                                        .build()
+                        )
+                )
                 .build();
 
         assertThrows(InvalidBodyTemplateException.class, () -> endpointService.createEndpoint(endpointDto));
     }
 
     @Test
-    void createEndpointInvalidResponseTemplateTestCase() {
+    void InvalidResponseParameterCreateEndpointTestCase() {
         EndpointDto endpointDto = EndpointDto.builder()
-                .title("Some test endpoint")
-                .description("Some test description")
-                .bodyTemplate(Map.of(
-                        "field1", "str",
-                        "field2", "int"
-                ))
-                .responseTemplate(Map.of(
-                        "responseField1", "abracadabra",
-                        "responseField2", "what?"
-                ))
+                .responseTemplate(
+                        Map.of(
+                                "responseStrField", ParamDto.builder()
+                                        .type("invalid type")
+                                        .build()
+                        )
+                )
                 .build();
 
         assertThrows(InvalidResponseTemplateException.class, () -> endpointService.createEndpoint(endpointDto));
     }
 
     @Test
-    void useEndpointHappyTestCase() {
-        Endpoint endpoint = endpointService.createEndpoint(getTestEndpointDto());
+    void happyUseEndpointTestCase() {
+        EndpointDto normalEndpointDto = getNormalEndpointDto();
 
-        Map<String, ?> body = Map.of(
-                "field1", "some string",
-                "field2", 1024
+        UUID id = endpointService.createEndpoint(normalEndpointDto).getId();
+
+        Map<String, ?> response = endpointService.useEndpoint(
+                id,
+                Map.of(
+                        "bodyStrField", "some string",
+                        "bodyIntField", 1024,
+                        "bodyRegexField", "ab1?%",
+                        "bodyFixedString", "fixed string"
+                )
         );
-        Map<String, ?> response = endpointService.useEndpoint(endpoint.getId(), body);
 
-        assertTrue(response.containsKey("responseField1"));
-        assertTrue(response.containsKey("responseField2"));
-        assertDoesNotThrow(() -> Integer.parseInt(response.get("responseField2").toString()));
+        assertTrue(response.get("responseStrField") instanceof String);
+        assertDoesNotThrow(() -> Integer.parseInt(response.get("responseIntField").toString()));
+        assertTrue(response.get("responseRegexField").toString().matches(".{10}"));
+        assertEquals(response.get("responseFixedField"), "fixed string");
     }
 
     @Test
-    void useEndpointNotFoundTestCase() {
-        endpointService.createEndpoint(getTestEndpointDto());
+    void endpointNotFoundUseEndpointCase() {
+        endpointService.createEndpoint(getNormalEndpointDto());
 
-        assertThrows(
-                EndpointNotFoundException.class,
-                () -> endpointService.useEndpoint(UUID.randomUUID(), Map.of())
-        );
+        assertThrows(EndpointNotFoundException.class, () -> endpointService.useEndpoint(UUID.randomUUID(), Map.of()));
     }
 
     @Test
-    void useEndpointMandatoryParameterNotSpecifiedTestCase() {
-        Endpoint endpoint = endpointService.createEndpoint(getTestEndpointDto());
+    void mandatoryParamIsNotPresentUseEndpointTestCase() {
+        EndpointDto normalEndpointDto = getNormalEndpointDto();
 
-        Map<String, ?> bodyWithoutMandatoryParameter = Map.of(
-                "field1", "some string"
-        );
+        UUID id = endpointService.createEndpoint(normalEndpointDto).getId();
 
-        assertThrows(
-                MandatoryParameterNotSpecifiedException.class,
-                () -> endpointService.useEndpoint(endpoint.getId(), bodyWithoutMandatoryParameter)
-        );
+        MandatoryParameterNotSpecifiedException e = assertThrows(MandatoryParameterNotSpecifiedException.class, () ->
+                endpointService.useEndpoint(
+                        id,
+                        Map.of(
+                                "bodyIntField", 1024,
+                                "bodyRegexField", "ab1?%",
+                                "bodyFixedString", "fixed string"
+                        )
+                ));
+        assertEquals(e.getMessage(), "Mandatory parameter bodyStrField not found");
     }
 
     @Test
-    void useEndpointParameterTypeMismatchTestCase() {
-        Endpoint endpoint = endpointService.createEndpoint(getTestEndpointDto());
+    void intInvalidParameterTypeUseEndpointTestCase() {
+        EndpointDto normalEndpointDto = getNormalEndpointDto();
 
-        Map<String, ?> bodyWithMismatchedTypeOfParameter = Map.of(
-                "field1", "some string",
-                "field2", "here must be int"
-        );
+        UUID id = endpointService.createEndpoint(normalEndpointDto).getId();
 
-        assertThrows(
-                ParameterTypeMismatchException.class,
-                () -> endpointService.useEndpoint(endpoint.getId(), bodyWithMismatchedTypeOfParameter)
-        );
-
+        ParameterTypeMismatchException e = assertThrows(ParameterTypeMismatchException.class, () ->
+                endpointService.useEndpoint(
+                        id,
+                        Map.of(
+                                "bodyStrField", "some string",
+                                "bodyIntField", "it must be int",
+                                "bodyRegexField", "ab1?%",
+                                "bodyFixedString", "fixed string"
+                        )
+                ));
+        assertEquals(e.getMessage(), "Body parameter bodyIntField value is invalid");
     }
 
     @Test
-    void deleteEndpointHappyTestCase(){
-        EndpointDto testEndpointDto = getTestEndpointDto();
+    void regexInvalidParameterTypeUseEndpointTestCase() {
+        EndpointDto normalEndpointDto = getNormalEndpointDto();
 
-        endpointService.createEndpoint(testEndpointDto);
+        UUID id = endpointService.createEndpoint(normalEndpointDto).getId();
+
+        ParameterTypeMismatchException e = assertThrows(ParameterTypeMismatchException.class, () ->
+                endpointService.useEndpoint(
+                        id,
+                        Map.of(
+                                "bodyStrField", "some string",
+                                "bodyIntField", 1024,
+                                "bodyRegexField", "it must have only 10 symbols",
+                                "bodyFixedString", "fixed string"
+                        )
+                ));
+        assertEquals(e.getMessage(), "Body parameter bodyRegexField value does not match regex [.{10}]");
+    }
+
+    @Test
+    void fixedParameterTypeUseEndpointTestCase() {
+        EndpointDto normalEndpointDto = getNormalEndpointDto();
+
+        UUID id = endpointService.createEndpoint(normalEndpointDto).getId();
+
+        ParameterTypeMismatchException e = assertThrows(ParameterTypeMismatchException.class, () ->
+                endpointService.useEndpoint(
+                        id,
+                        Map.of(
+                                "bodyStrField", "some string",
+                                "bodyIntField", 1024,
+                                "bodyRegexField", "ab1?%",
+                                "bodyFixedString", "this is wrong fixed string"
+                        )
+                ));
+        assertEquals(e.getMessage(), "Body parameter bodyFixedString value does not match fixed value [fixed string]");
+    }
+
+    @Test
+    void happyDeleteEndpointCate() {
+        EndpointDto endpointDto = getNormalEndpointDto();
+        UUID id = endpointService.createEndpoint(endpointDto).getId();
+
+        Endpoint deletedEndpoint = endpointService.deleteEndpoint(id);
+
+        assertThrows(EndpointNotFoundException.class, () -> endpointService.deleteEndpoint(id));
+        assertEquals(deletedEndpoint.getTitle(), endpointDto.getTitle());
+        assertEquals(deletedEndpoint.getDescription(), endpointDto.getDescription());
+        assertEquals(deletedEndpoint.getId(), id);
+    }
+
+    @Test
+    void endpointNotFoundDeleteEndpointCate() {
+        endpointService.createEndpoint(getNormalEndpointDto());
 
         assertThrows(EndpointNotFoundException.class, () -> endpointService.deleteEndpoint(UUID.randomUUID()));
     }
 
-    @Test
-    void deleteEndpointNotFoundTestCase(){
-        EndpointDto testEndpointDto = getTestEndpointDto();
-
-        Endpoint actualEndpoint = endpointService.createEndpoint(testEndpointDto);
-
-        Endpoint deletedEndpoint = endpointService.deleteEndpoint(actualEndpoint.getId());
-
-        assertEquals(
-                Map.of(
-                        "field1", ParamType.STRING,
-                        "field2", ParamType.INTEGER
-                ),
-                deletedEndpoint.getBodyTemplate());
-        assertEquals(deletedEndpoint.getTitle(), actualEndpoint.getTitle());
-        assertEquals(deletedEndpoint.getDescription(), actualEndpoint.getDescription());
-        assertTrue(deletedEndpoint.getResponseTemplate().containsKey("responseField1"));
-        assertTrue(deletedEndpoint.getResponseTemplate().containsKey("responseField2"));
-        assertEquals(ParamType.STRING, deletedEndpoint.getResponseTemplate().get("responseField1"));
-        assertEquals(ParamType.INTEGER, deletedEndpoint.getResponseTemplate().get("responseField2"));
-    }
-
-    private EndpointDto getTestEndpointDto() {
+    private static EndpointDto getNormalEndpointDto() {
         return EndpointDto.builder()
-                .title("Some test endpoint")
-                .description("Some test description")
-                .bodyTemplate(Map.of(
-                        "field1", "str",
-                        "field2", "int"
-                ))
-                .responseTemplate(Map.of(
-                        "responseField1", "str",
-                        "responseField2", "int"
-                ))
+                .title("test endpoint")
+                .description("endpoint for tests")
+                .bodyTemplate(
+                        Map.of(
+                                "bodyStrField", ParamDto.builder()
+                                        .type("str")
+                                        .build(),
+                                "bodyIntField", ParamDto.builder()
+                                        .type("int")
+                                        .build(),
+                                "bodyRegexField", ParamDto.builder()
+                                        .type("regex")
+                                        .value(".{10}")
+                                        .build(),
+                                "bodyFixedField", ParamDto.builder()
+                                        .type("fixed")
+                                        .value("fixed string")
+                                        .build()
+                        )
+                )
+                .responseTemplate(
+                        Map.of(
+                                "responseStrField", ParamDto.builder()
+                                        .type("str")
+                                        .build(),
+                                "responseIntField", ParamDto.builder()
+                                        .type("int")
+                                        .build(),
+                                "responseRegexField", ParamDto.builder()
+                                        .type("regex")
+                                        .value(".{7}")
+                                        .build(),
+                                "responseFixedField", ParamDto.builder()
+                                        .type("fixed")
+                                        .value("fixed string")
+                                        .build()
+                        )
+                )
                 .build();
     }
 }

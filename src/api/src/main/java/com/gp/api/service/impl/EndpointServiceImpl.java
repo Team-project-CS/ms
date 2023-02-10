@@ -5,8 +5,9 @@ import com.gp.api.exception.throwables.MandatoryParameterNotSpecifiedException;
 import com.gp.api.exception.throwables.ParameterTypeMismatchException;
 import com.gp.api.model.Endpoint;
 import com.gp.api.model.EndpointDto;
+import com.gp.api.model.Param;
 import com.gp.api.model.entity.EndpointEntity;
-import com.gp.api.model.types.ParamType;
+import com.gp.api.model.types.BodyParamType;
 import com.gp.api.repository.EndpointRepository;
 import com.gp.api.service.EndpointService;
 import com.gp.api.service.ResponseGenerator;
@@ -15,18 +16,20 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 @Service
 public class EndpointServiceImpl implements EndpointService {
 
     private static final String ENDPOINT_WITH_SPECIFIED_ID_NOT_FOUND = "Endpoint with specified ID not found";
-    private static final String MANDATORY_PARAMETER_NOT_FOUND = "Mandatory parameter not found";
-    private static final String PARAMETER_MISMATCH = "Type of %s parameter is mismatched";
+    private static final String MANDATORY_PARAMETER_NOT_FOUND = "Mandatory parameter %s not found";
+    private static final String PARAMETER_VALUE_IS_INVALID = "Body parameter %s value is invalid";
+    private static final String PARAMETER_VALUE_DOES_NOT_MATCH_REGEX = "Body parameter %s value does not match regex [%s]";
+    private static final String PARAMETER_VALUE_DOES_NOT_MATCH_FIXED = "Body parameter %s value does not match fixed value [%s]";
+
 
     @Autowired
     private EndpointRepository endpointRepository;
@@ -60,39 +63,50 @@ public class EndpointServiceImpl implements EndpointService {
         return endpointMapper.fromEntityToPojo(endpointEntity);
     }
 
-    private void checkBodyCompliance(Map<String, ?> body, Map<String, ParamType> bodyTemplate) {
-        checkParametersKeys(body, bodyTemplate);
-        checkParametersTypes(body, bodyTemplate);
+    private void checkBodyCompliance(Map<String, ?> body, Map<String, Param<BodyParamType>> bodyTemplate) {
+        checkMandatoryBodyFieldsPresense(body, bodyTemplate);
+        checkParametersValues(body, bodyTemplate);
+    }
+
+    private void checkParametersValues(Map<String, ?> body, Map<String, Param<BodyParamType>> bodyTemplate) {
+        bodyTemplate.keySet()
+                .forEach(param -> checkBodyParamValue(body.get(param), bodyTemplate.get(param), param));
     }
 
     @SneakyThrows
-    private void checkParametersTypes(Map<String, ?> body, Map<String, ParamType> bodyTemplate) {
-        for (String key : getIntegerParamsKeys(bodyTemplate)) {
-            try {
-                Integer.parseInt(body.get(key).toString());
-            } catch (NumberFormatException e) {
-                throw new ParameterTypeMismatchException(String.format(PARAMETER_MISMATCH, key));
-            }
+    private void checkBodyParamValue(Object bodyParam, Param<BodyParamType> bodyParamType, String param) {
+        String value = ((Param<BodyParamType>) bodyParam).getValue();
+        switch (bodyParamType.getType()) {
+            case INTEGER:
+                try {
+                    Integer.parseInt(value);
+                } catch (NumberFormatException e) {
+                    throw new ParameterTypeMismatchException(String.format(PARAMETER_VALUE_IS_INVALID, param));
+                }
+                break;
+            case REGEX:
+                boolean isValueMatched = value.matches(bodyParamType.getValue());
+                if (!isValueMatched) {
+                    throw new ParameterTypeMismatchException(String.format(PARAMETER_VALUE_DOES_NOT_MATCH_REGEX, param, value));
+                }
+                break;
+            case FIXED:
+                boolean valueDoesNotEquals = !value.equals(bodyParamType.getValue());
+                if (valueDoesNotEquals) {
+                    throw new ParameterTypeMismatchException(String.format(PARAMETER_VALUE_DOES_NOT_MATCH_FIXED, param, value));
+                }
+            default:
+                break;
         }
     }
 
-    private List<String> getIntegerParamsKeys(Map<String, ParamType> bodyTemplate) {
-        return bodyTemplate.entrySet().stream()
-                .filter(isIntegerParam())
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
-    }
-
-    private static Predicate<Map.Entry<String, ParamType>> isIntegerParam() {
-        return entry -> entry.getValue().equals(ParamType.INTEGER);
-    }
-
     @SneakyThrows
-    private void checkParametersKeys(Map<String, ?> body, Map<String, ParamType> bodyTemplate) {
-        boolean templateKeyNotFound = bodyTemplate.keySet().stream()
-                .anyMatch(bodyDoesNotContainsKey(body));
-        if (templateKeyNotFound) {
-            throw new MandatoryParameterNotSpecifiedException(MANDATORY_PARAMETER_NOT_FOUND);
+    private void checkMandatoryBodyFieldsPresense(Map<String, ?> body, Map<String, Param<BodyParamType>> bodyTemplate) {
+        Optional<String> notFoundMandatoryParam = bodyTemplate.keySet().stream()
+                .filter(bodyDoesNotContainsKey(body))
+                .findAny();
+        if (notFoundMandatoryParam.isPresent()) {
+            throw new MandatoryParameterNotSpecifiedException(String.format(MANDATORY_PARAMETER_NOT_FOUND, notFoundMandatoryParam.get()));
         }
     }
 
