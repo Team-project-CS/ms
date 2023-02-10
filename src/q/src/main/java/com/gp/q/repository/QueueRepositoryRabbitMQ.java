@@ -3,9 +3,7 @@ package com.gp.q.repository;
 import com.gp.q.exception.throwables.QueueServiceException;
 import com.gp.q.model.entity.QueueMessageEntity;
 import lombok.SneakyThrows;
-import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
@@ -17,11 +15,6 @@ public class QueueRepositoryRabbitMQ implements QueueRepository {
 
     public QueueRepositoryRabbitMQ(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
-    }
-
-    @Bean
-    Queue queue() {
-        return new Queue("queue_1", false);
     }
 
     @Override
