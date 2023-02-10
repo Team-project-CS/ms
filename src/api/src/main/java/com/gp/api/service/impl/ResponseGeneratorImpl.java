@@ -1,6 +1,6 @@
 package com.gp.api.service.impl;
 
-import com.gp.api.model.ParamType;
+import com.gp.api.model.types.ParamType;
 import com.gp.api.service.ResponseGenerator;
 import org.springframework.stereotype.Service;
 

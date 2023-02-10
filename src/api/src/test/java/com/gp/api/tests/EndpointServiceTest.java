@@ -5,10 +5,9 @@ import com.gp.api.BaseTestConfig;
 import com.gp.api.exception.throwables.*;
 import com.gp.api.model.Endpoint;
 import com.gp.api.model.EndpointDto;
-import com.gp.api.model.ParamType;
+import com.gp.api.model.types.ParamType;
 import com.gp.api.repository.EndpointRepository;
 import com.gp.api.service.EndpointService;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,6 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringJUnitConfig({BaseTestConfig.class})
-@Slf4j
 public class EndpointServiceTest extends BaseTest {
 
     @Autowired

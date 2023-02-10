@@ -1,6 +1,6 @@
 package com.gp.api.service;
 
-import com.gp.api.model.ParamType;
+import com.gp.api.model.types.ParamType;
 
 import java.util.Map;
 

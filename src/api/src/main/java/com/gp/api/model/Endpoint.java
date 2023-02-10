@@ -1,5 +1,6 @@
 package com.gp.api.model;
 
+import com.gp.api.model.types.ParamType;
 import lombok.Data;
 
 import java.util.Map;

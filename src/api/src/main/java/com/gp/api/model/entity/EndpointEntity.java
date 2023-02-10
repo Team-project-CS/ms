@@ -1,6 +1,6 @@
 package com.gp.api.model.entity;
 
-import com.gp.api.model.ParamType;
+import com.gp.api.model.types.ParamType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
