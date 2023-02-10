@@ -1,11 +1,9 @@
 package com.gp.q.service;
 
-import com.gp.q.model.dto.QueueCreateParams;
-import com.gp.q.model.dto.QueueDto;
-
-import java.util.UUID;
+import com.gp.q.model.dto.QueueMessageDto;
 
 public interface QueueService {
-    void createQueue(QueueCreateParams queueCreateParams);
-    QueueDto getQueue(UUID id);
+    QueueMessageDto pushInQueue(QueueMessageDto queueMessageDto);
+
+    QueueMessageDto popFromQueue(String id);
 }
