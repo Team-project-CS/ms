@@ -4,11 +4,10 @@ import com.gp.q.exception.throwables.QueueServiceException;
 import com.gp.q.model.entity.QueueMessageEntity;
 import lombok.SneakyThrows;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@Primary
 public class QueueRepositoryRabbitMQ implements QueueRepository {
 
     private final RabbitTemplate rabbitTemplate;
@@ -19,7 +18,8 @@ public class QueueRepositoryRabbitMQ implements QueueRepository {
 
     @Override
     public QueueMessageEntity push(QueueMessageEntity entity) {
-//        rabbitTemplate.convertAndSend(entity.getName(), "", entity.getMessage());
+        // Если применяется обменник по умолчанию,
+        // то сообщение будет маршрутизироваться в очередь с именем равным ключу маршрутизации сообщения.
         rabbitTemplate.convertAndSend(entity.getName(), entity.getMessage());
         return entity;
     }
@@ -30,7 +30,7 @@ public class QueueRepositoryRabbitMQ implements QueueRepository {
 
         String message = (String) rabbitTemplate.receiveAndConvert(queueName);
         if (message == null) {
-            throw new QueueServiceException("queue with name " + queueName + " is empty or not exist");
+            throw new QueueServiceException("queue with name " + queueName + " is empty or not exist", HttpStatus.NOT_FOUND);
         }
         return new QueueMessageEntity(queueName, message);
     }

@@ -39,7 +39,7 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(value = {MethodArgumentNotValidException.class, MissingServletRequestParameterException.class})
     public ResponseEntity<ApiError> methodArgumentNotValidExceptionHandler(HttpServletRequest req, Exception e) {
-        log.error(ExceptionUtils.getStackTrace(e));
+        log.debug(ExceptionUtils.getStackTrace(e));
 
         final ApiError.ApiErrorBuilder apiErrorBuilder = ApiError.builder()
                 .timestamp(LocalDateTime.now())
