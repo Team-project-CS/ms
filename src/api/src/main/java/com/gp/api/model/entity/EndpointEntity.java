@@ -1,8 +1,5 @@
 package com.gp.api.model.entity;
 
-import com.gp.api.model.Param;
-import com.gp.api.model.types.BodyParamType;
-import com.gp.api.model.types.ResponseParamType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -10,8 +7,9 @@ import lombok.ToString;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -25,10 +23,10 @@ public class EndpointEntity {
     @GeneratedValue
     private UUID id;
     private String title;
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Map<String, Param<BodyParamType>> bodyTemplate;
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Map<String, Param<ResponseParamType>> responseTemplate;
+    @OneToMany(mappedBy = "bodyEndpointEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<ParamEntity> bodyTemplate = new HashSet<>();
+    @OneToMany(mappedBy = "responseEndpointEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<ParamEntity> responseTemplate = new HashSet<>();
     private String description;
 
     @Override

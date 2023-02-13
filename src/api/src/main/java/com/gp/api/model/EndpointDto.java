@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Map;
+import java.util.Set;
 
 @Data
 @Builder
@@ -14,6 +14,6 @@ import java.util.Map;
 public class EndpointDto {
     private String title;
     private String description;
-    private Map<String, ParamDto> bodyTemplate;
-    private Map<String, ParamDto> responseTemplate;
+    private Set<ParamDto> bodyTemplate;
+    private Set<ParamDto> responseTemplate;
 }

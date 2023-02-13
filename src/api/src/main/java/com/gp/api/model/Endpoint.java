@@ -1,17 +1,15 @@
 package com.gp.api.model;
 
-import com.gp.api.model.types.BodyParamType;
-import com.gp.api.model.types.ResponseParamType;
 import lombok.Data;
 
-import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
 public class Endpoint {
     private UUID id;
     private String title;
-    private Map<String, Param<BodyParamType>> bodyTemplate;
-    private Map<String, Param<ResponseParamType>> responseTemplate;
+    private Set<Param> bodyTemplate;
+    private Set<Param> responseTemplate;
     private String description;
 }

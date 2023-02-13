@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ParamDto {
-    private String type;
+    private String key;
     private String value;
+    private String type;
 }

@@ -1,7 +1,6 @@
 package com.gp.api.service.impl;
 
 import com.gp.api.model.Param;
-import com.gp.api.model.types.ResponseParamType;
 import com.gp.api.service.ResponseGenerator;
 import org.cornutum.regexpgen.RandomGen;
 import org.cornutum.regexpgen.js.Provider;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 @Service
 public class ResponseGeneratorImpl implements ResponseGenerator {
@@ -23,13 +23,13 @@ public class ResponseGeneratorImpl implements ResponseGenerator {
     private static final int MAX_REGEX_STRING_LENGTH = 15;
 
     @Override
-    public Map<String, ?> generateResponse(Map<String, Param<ResponseParamType>> responseTemplate) {
+    public Map<String, ?> generateResponse(Set<Param> responseTemplate) {
         Map<String, Object> response = new HashMap<>();
-        responseTemplate.forEach((paramName, param) -> response.put(paramName, generateRandomValue(param)));
+        responseTemplate.forEach(param -> response.put(param.getKey(), generateRandomValue(param)));
         return response;
     }
 
-    private Object generateRandomValue(Param<ResponseParamType> param) {
+    private Object generateRandomValue(Param param) {
         switch (param.getType()) {
             case STRING:
                 return generateRandomString();

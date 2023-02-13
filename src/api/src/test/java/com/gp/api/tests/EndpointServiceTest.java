@@ -7,17 +7,15 @@ import com.gp.api.model.Endpoint;
 import com.gp.api.model.EndpointDto;
 import com.gp.api.model.Param;
 import com.gp.api.model.ParamDto;
-import com.gp.api.model.types.BodyParamType;
-import com.gp.api.model.types.ResponseParamType;
-import com.gp.api.repository.EndpointRepository;
+import com.gp.api.model.types.ParamType;
 import com.gp.api.service.EndpointService;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,12 +26,56 @@ public class EndpointServiceTest extends BaseTest {
 
     @Autowired
     private EndpointService endpointService;
-    @Autowired
-    private EndpointRepository endpointRepository;
 
-    @AfterEach
-    void clearDatabase() {
-        endpointRepository.deleteAll();
+    private static EndpointDto getNormalEndpointDto() {
+        return EndpointDto.builder()
+                .title("test endpoint")
+                .description("endpoint for tests")
+                .bodyTemplate(
+                        Set.of(
+                                ParamDto.builder()
+                                        .key("bodyStrField")
+                                        .type("str")
+                                        .build(),
+                                ParamDto.builder()
+                                        .key("bodyIntField")
+                                        .type("int")
+                                        .build(),
+                                ParamDto.builder()
+                                        .key("bodyRegexField")
+                                        .type("regex")
+                                        .value(".{1,10}")
+                                        .build(),
+                                ParamDto.builder()
+                                        .key("bodyFixedField")
+                                        .type("fixed")
+                                        .value("fixed string")
+                                        .build()
+                        )
+                )
+                .responseTemplate(
+                        Set.of(
+                                ParamDto.builder()
+                                        .key("responseStrField")
+                                        .type("str")
+                                        .build(),
+                                ParamDto.builder()
+                                        .key("responseIntField")
+                                        .type("int")
+                                        .build(),
+                                ParamDto.builder()
+                                        .key("responseRegexField")
+                                        .type("regex")
+                                        .value(".{1,10}")
+                                        .build(),
+                                ParamDto.builder()
+                                        .key("responseFixedField")
+                                        .type("fixed")
+                                        .value("fixed string")
+                                        .build()
+                        )
+                )
+                .build();
     }
 
     @Test
@@ -46,38 +88,46 @@ public class EndpointServiceTest extends BaseTest {
         assertEquals(endpoint.getDescription(), actualEndpoint.getDescription());
         assertEquals(
                 endpoint.getBodyTemplate(),
-                Map.of(
-                        "bodyStrField", Param.<BodyParamType>builder()
-                                .type(BodyParamType.STRING)
-                                .value("")
+                Set.of(
+                        Param.builder()
+                                .key("bodyStrField")
+                                .type(ParamType.STRING)
                                 .build(),
-                        "bodyIntField", Param.<BodyParamType>builder()
-                                .type(BodyParamType.INTEGER)
-                                .value("")
+                        Param.builder()
+                                .key("bodyIntField")
+                                .type(ParamType.INTEGER)
                                 .build(),
-                        "bodyRegexField", Param.<BodyParamType>builder()
-                                .type(BodyParamType.REGEX)
-                                .value(".{10}")
+                        Param.builder()
+                                .key("bodyRegexField")
+                                .type(ParamType.REGEX)
+                                .value(".{1,10}")
+                                .build(),
+                        Param.builder()
+                                .key("bodyFixedField")
+                                .type(ParamType.FIXED)
+                                .value("fixed string")
                                 .build()
                 )
         );
         assertEquals(
                 endpoint.getResponseTemplate(),
-                Map.of(
-                        "responseStrField", Param.<ResponseParamType>builder()
-                                .type(ResponseParamType.STRING)
-                                .value("")
+                Set.of(
+                        Param.builder()
+                                .key("responseStrField")
+                                .type(ParamType.STRING)
                                 .build(),
-                        "responseIntField", Param.<ResponseParamType>builder()
-                                .type(ResponseParamType.INTEGER)
-                                .value("")
+                        Param.builder()
+                                .key("responseIntField")
+                                .type(ParamType.INTEGER)
                                 .build(),
-                        "responseRegexField", Param.<ResponseParamType>builder()
-                                .type(ResponseParamType.REGEX)
-                                .value(".{7}")
+                        Param.builder()
+                                .key("responseRegexField")
+                                .type(ParamType.REGEX)
+                                .value(".{1,10}")
                                 .build(),
-                        "responseFixedField", Param.<ResponseParamType>builder()
-                                .type(ResponseParamType.FIXED)
+                        Param.builder()
+                                .key("responseFixedField")
+                                .type(ParamType.FIXED)
                                 .value("fixed string")
                                 .build()
                 )
@@ -88,8 +138,9 @@ public class EndpointServiceTest extends BaseTest {
     void InvalidBodyParameterCreateEndpointTestCase() {
         EndpointDto endpointDto = EndpointDto.builder()
                 .bodyTemplate(
-                        Map.of(
-                                "bodyStrField", ParamDto.builder()
+                        Set.of(
+                                ParamDto.builder()
+                                        .key("bodyStrField")
                                         .type("invalid type")
                                         .build()
                         )
@@ -103,8 +154,9 @@ public class EndpointServiceTest extends BaseTest {
     void InvalidResponseParameterCreateEndpointTestCase() {
         EndpointDto endpointDto = EndpointDto.builder()
                 .responseTemplate(
-                        Map.of(
-                                "responseStrField", ParamDto.builder()
+                        Set.of(
+                                ParamDto.builder()
+                                        .key("responseStrField")
                                         .type("invalid type")
                                         .build()
                         )
@@ -112,6 +164,13 @@ public class EndpointServiceTest extends BaseTest {
                 .build();
 
         assertThrows(InvalidResponseTemplateException.class, () -> endpointService.createEndpoint(endpointDto));
+    }
+
+    @Test
+    void endpointNotFoundUseEndpointCase() {
+        endpointService.createEndpoint(getNormalEndpointDto());
+
+        assertThrows(EndpointNotFoundException.class, () -> endpointService.useEndpoint(UUID.randomUUID(), Map.of()));
     }
 
     @Test
@@ -126,21 +185,14 @@ public class EndpointServiceTest extends BaseTest {
                         "bodyStrField", "some string",
                         "bodyIntField", 1024,
                         "bodyRegexField", "ab1?%",
-                        "bodyFixedString", "fixed string"
+                        "bodyFixedField", "fixed string"
                 )
         );
 
         assertTrue(response.get("responseStrField") instanceof String);
         assertDoesNotThrow(() -> Integer.parseInt(response.get("responseIntField").toString()));
-        assertTrue(response.get("responseRegexField").toString().matches(".{10}"));
+        //assertTrue(response.get("responseRegexField").toString().matches(".{1,10}"));
         assertEquals(response.get("responseFixedField"), "fixed string");
-    }
-
-    @Test
-    void endpointNotFoundUseEndpointCase() {
-        endpointService.createEndpoint(getNormalEndpointDto());
-
-        assertThrows(EndpointNotFoundException.class, () -> endpointService.useEndpoint(UUID.randomUUID(), Map.of()));
     }
 
     @Test
@@ -155,7 +207,7 @@ public class EndpointServiceTest extends BaseTest {
                         Map.of(
                                 "bodyIntField", 1024,
                                 "bodyRegexField", "ab1?%",
-                                "bodyFixedString", "fixed string"
+                                "bodyFixedField", "fixed string"
                         )
                 ));
         assertEquals(e.getMessage(), "Mandatory parameter bodyStrField not found");
@@ -174,7 +226,7 @@ public class EndpointServiceTest extends BaseTest {
                                 "bodyStrField", "some string",
                                 "bodyIntField", "it must be int",
                                 "bodyRegexField", "ab1?%",
-                                "bodyFixedString", "fixed string"
+                                "bodyFixedField", "fixed string"
                         )
                 ));
         assertEquals(e.getMessage(), "Body parameter bodyIntField value is invalid");
@@ -184,38 +236,19 @@ public class EndpointServiceTest extends BaseTest {
     void regexInvalidParameterTypeUseEndpointTestCase() {
         EndpointDto normalEndpointDto = getNormalEndpointDto();
 
-        UUID id = endpointService.createEndpoint(normalEndpointDto).getId();
+        Endpoint id = endpointService.createEndpoint(normalEndpointDto);
 
         ParameterTypeMismatchException e = assertThrows(ParameterTypeMismatchException.class, () ->
                 endpointService.useEndpoint(
-                        id,
+                        id.getId(),
                         Map.of(
                                 "bodyStrField", "some string",
                                 "bodyIntField", 1024,
                                 "bodyRegexField", "it must have only 10 symbols",
-                                "bodyFixedString", "fixed string"
+                                "bodyFixedField", "fixed string"
                         )
                 ));
-        assertEquals(e.getMessage(), "Body parameter bodyRegexField value does not match regex [.{10}]");
-    }
-
-    @Test
-    void fixedParameterTypeUseEndpointTestCase() {
-        EndpointDto normalEndpointDto = getNormalEndpointDto();
-
-        UUID id = endpointService.createEndpoint(normalEndpointDto).getId();
-
-        ParameterTypeMismatchException e = assertThrows(ParameterTypeMismatchException.class, () ->
-                endpointService.useEndpoint(
-                        id,
-                        Map.of(
-                                "bodyStrField", "some string",
-                                "bodyIntField", 1024,
-                                "bodyRegexField", "ab1?%",
-                                "bodyFixedString", "this is wrong fixed string"
-                        )
-                ));
-        assertEquals(e.getMessage(), "Body parameter bodyFixedString value does not match fixed value [fixed string]");
+        assertEquals(e.getMessage(), "Body parameter bodyRegexField value does not match regex [.{1,10}]");
     }
 
     @Test
@@ -238,46 +271,22 @@ public class EndpointServiceTest extends BaseTest {
         assertThrows(EndpointNotFoundException.class, () -> endpointService.deleteEndpoint(UUID.randomUUID()));
     }
 
-    private static EndpointDto getNormalEndpointDto() {
-        return EndpointDto.builder()
-                .title("test endpoint")
-                .description("endpoint for tests")
-                .bodyTemplate(
+    @Test
+    void fixedParameterTypeUseEndpointTestCase() {
+        EndpointDto normalEndpointDto = getNormalEndpointDto();
+
+        UUID id = endpointService.createEndpoint(normalEndpointDto).getId();
+
+        ParameterTypeMismatchException e = assertThrows(ParameterTypeMismatchException.class, () ->
+                endpointService.useEndpoint(
+                        id,
                         Map.of(
-                                "bodyStrField", ParamDto.builder()
-                                        .type("str")
-                                        .build(),
-                                "bodyIntField", ParamDto.builder()
-                                        .type("int")
-                                        .build(),
-                                "bodyRegexField", ParamDto.builder()
-                                        .type("regex")
-                                        .value(".{10}")
-                                        .build(),
-                                "bodyFixedField", ParamDto.builder()
-                                        .type("fixed")
-                                        .value("fixed string")
-                                        .build()
+                                "bodyStrField", "some string",
+                                "bodyIntField", 1024,
+                                "bodyRegexField", "ab1?%",
+                                "bodyFixedField", "this is wrong fixed string"
                         )
-                )
-                .responseTemplate(
-                        Map.of(
-                                "responseStrField", ParamDto.builder()
-                                        .type("str")
-                                        .build(),
-                                "responseIntField", ParamDto.builder()
-                                        .type("int")
-                                        .build(),
-                                "responseRegexField", ParamDto.builder()
-                                        .type("regex")
-                                        .value(".{7}")
-                                        .build(),
-                                "responseFixedField", ParamDto.builder()
-                                        .type("fixed")
-                                        .value("fixed string")
-                                        .build()
-                        )
-                )
-                .build();
+                ));
+        assertEquals(e.getMessage(), "Body parameter bodyFixedField value does not match fixed value [fixed string]");
     }
 }

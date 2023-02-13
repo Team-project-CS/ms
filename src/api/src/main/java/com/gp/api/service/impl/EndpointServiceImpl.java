@@ -6,9 +6,11 @@ import com.gp.api.exception.throwables.ParameterTypeMismatchException;
 import com.gp.api.model.Endpoint;
 import com.gp.api.model.EndpointDto;
 import com.gp.api.model.Param;
+import com.gp.api.model.ParamDto;
 import com.gp.api.model.entity.EndpointEntity;
-import com.gp.api.model.types.BodyParamType;
+import com.gp.api.model.entity.ParamEntity;
 import com.gp.api.repository.EndpointRepository;
+import com.gp.api.repository.ParamRepository;
 import com.gp.api.service.EndpointService;
 import com.gp.api.service.ResponseGenerator;
 import com.gp.api.service.mapper.EndpointMapper;
@@ -18,8 +20,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Service
 public class EndpointServiceImpl implements EndpointService {
@@ -34,14 +38,31 @@ public class EndpointServiceImpl implements EndpointService {
     @Autowired
     private EndpointRepository endpointRepository;
     @Autowired
+    private ParamRepository paramRepository;
+    @Autowired
     private ResponseGenerator responseGenerator;
     @Autowired
     private EndpointMapper endpointMapper;
 
+    private static Predicate<Param> bodyDoesNotContainsKey(Map<String, ?> body) {
+        return param -> !body.containsKey(param.getKey());
+    }
+
     @Override
     public Endpoint createEndpoint(EndpointDto endpointDto) {
-        EndpointEntity endpointEntity = endpointMapper.fromDtoToEntity(endpointDto);
-        return endpointMapper.fromEntityToPojo(endpointRepository.save(endpointEntity));
+        EndpointEntity endpointEntity = endpointRepository.save(endpointMapper.fromDtoToEntity(endpointDto));
+        endpointEntity.getBodyTemplate().addAll(saveBodyTemplate(endpointDto.getBodyTemplate(), endpointEntity));
+        endpointEntity.getResponseTemplate().addAll(saveResponseTemplate(endpointDto.getResponseTemplate(), endpointEntity));
+        return endpointMapper.fromEntityToPojo(endpointEntity);
+    }
+
+    private Set<ParamEntity> saveBodyTemplate(Set<ParamDto> bodyTemplate, EndpointEntity endpointEntity) {
+        return endpointMapper.bodyParamsFromDto(bodyTemplate).stream()
+                .map(paramEntity -> {
+                    paramEntity.setBodyEndpointEntity(endpointEntity);
+                    return paramRepository.save(paramEntity);
+                })
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -63,37 +84,45 @@ public class EndpointServiceImpl implements EndpointService {
         return endpointMapper.fromEntityToPojo(endpointEntity);
     }
 
-    private void checkBodyCompliance(Map<String, ?> body, Map<String, Param<BodyParamType>> bodyTemplate) {
+    private Set<ParamEntity> saveResponseTemplate(Set<ParamDto> responseTemplate, EndpointEntity endpointEntity) {
+        return endpointMapper.responseParamsFromDto(responseTemplate).stream()
+                .map(paramEntity -> {
+                    paramEntity.setResponseEndpointEntity(endpointEntity);
+                    return paramRepository.save(paramEntity);
+                })
+                .collect(Collectors.toSet());
+    }
+
+    private void checkBodyCompliance(Map<String, ?> body, Set<Param> bodyTemplate) {
         checkMandatoryBodyFieldsPresense(body, bodyTemplate);
         checkParametersValues(body, bodyTemplate);
     }
 
-    private void checkParametersValues(Map<String, ?> body, Map<String, Param<BodyParamType>> bodyTemplate) {
-        bodyTemplate.keySet()
-                .forEach(param -> checkBodyParamValue(body.get(param), bodyTemplate.get(param), param));
+    private void checkParametersValues(Map<String, ?> body, Set<Param> bodyTemplate) {
+        bodyTemplate.forEach(param -> checkBodyParamValue(body.get(param.getKey()), param));
     }
 
     @SneakyThrows
-    private void checkBodyParamValue(Object bodyParam, Param<BodyParamType> bodyParamType, String param) {
-        String value = ((Param<BodyParamType>) bodyParam).getValue();
-        switch (bodyParamType.getType()) {
+    private void checkBodyParamValue(Object bodyParam, Param param) {
+        String value = bodyParam.toString();
+        switch (param.getType()) {
             case INTEGER:
                 try {
                     Integer.parseInt(value);
                 } catch (NumberFormatException e) {
-                    throw new ParameterTypeMismatchException(String.format(PARAMETER_VALUE_IS_INVALID, param));
+                    throw new ParameterTypeMismatchException(String.format(PARAMETER_VALUE_IS_INVALID, param.getKey()));
                 }
                 break;
             case REGEX:
-                boolean isValueMatched = value.matches(bodyParamType.getValue());
+                boolean isValueMatched = value.matches(param.getValue());
                 if (!isValueMatched) {
-                    throw new ParameterTypeMismatchException(String.format(PARAMETER_VALUE_DOES_NOT_MATCH_REGEX, param, value));
+                    throw new ParameterTypeMismatchException(String.format(PARAMETER_VALUE_DOES_NOT_MATCH_REGEX, param.getKey(), param.getValue()));
                 }
                 break;
             case FIXED:
-                boolean valueDoesNotEquals = !value.equals(bodyParamType.getValue());
+                boolean valueDoesNotEquals = !value.equals(param.getValue());
                 if (valueDoesNotEquals) {
-                    throw new ParameterTypeMismatchException(String.format(PARAMETER_VALUE_DOES_NOT_MATCH_FIXED, param, value));
+                    throw new ParameterTypeMismatchException(String.format(PARAMETER_VALUE_DOES_NOT_MATCH_FIXED, param.getKey(), param.getValue()));
                 }
             default:
                 break;
@@ -101,16 +130,12 @@ public class EndpointServiceImpl implements EndpointService {
     }
 
     @SneakyThrows
-    private void checkMandatoryBodyFieldsPresense(Map<String, ?> body, Map<String, Param<BodyParamType>> bodyTemplate) {
-        Optional<String> notFoundMandatoryParam = bodyTemplate.keySet().stream()
+    private void checkMandatoryBodyFieldsPresense(Map<String, ?> body, Set<Param> bodyTemplate) {
+        Optional<Param> notFoundMandatoryParam = bodyTemplate.stream()
                 .filter(bodyDoesNotContainsKey(body))
                 .findAny();
         if (notFoundMandatoryParam.isPresent()) {
-            throw new MandatoryParameterNotSpecifiedException(String.format(MANDATORY_PARAMETER_NOT_FOUND, notFoundMandatoryParam.get()));
+            throw new MandatoryParameterNotSpecifiedException(String.format(MANDATORY_PARAMETER_NOT_FOUND, notFoundMandatoryParam.get().getKey()));
         }
-    }
-
-    private Predicate<String> bodyDoesNotContainsKey(Map<String, ?> body) {
-        return key -> !body.containsKey(key);
     }
 }
