@@ -1,11 +1,11 @@
 package com.gp.q.repository;
 
-import com.gp.q.model.entity.QueueEntity;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
+import com.gp.q.model.entity.QueueMessageEntity;
 
-import java.util.UUID;
+public interface QueueRepository /*extends CrudRepository<QueueMessageEntity, UUID>*/ {
 
-@Repository
-public interface QueueRepository extends CrudRepository<QueueEntity, UUID> {
+    QueueMessageEntity push(QueueMessageEntity entity);
+
+    QueueMessageEntity pop(String queueName);
+
 }
