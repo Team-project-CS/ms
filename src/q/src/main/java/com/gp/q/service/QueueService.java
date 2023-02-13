@@ -6,9 +6,20 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface QueueService {
+    /**
+     * Добавляет сообщение в указанную очередь
+     *
+     * @return Добавленное сообщение
+     */
     QueueMessageDto pushInQueue(QueueMessageDto queueMessageDto);
 
-    QueueMessageDto popFromQueue(String id);
+    /**
+     * Извлекает сообщение из указанной очереди
+     *
+     * @param queueName Имя очереди
+     * @return Извлеченное сообщение
+     */
+    QueueMessageDto popFromQueue(String queueName);
 
     /**
      * Возвращает все сообщение когда-либо поступавшие в указанную очередь

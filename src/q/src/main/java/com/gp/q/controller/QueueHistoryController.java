@@ -23,10 +23,14 @@ public class QueueHistoryController {
     }
 
     @GetMapping
-    @ApiOperation("return all messages ever received in the queue for the specified period")
+    @ApiOperation(value = "return all messages ever received in the queue for the specified period", consumes = """
+            {
+              "name": "example_queue_name_1",
+              "start": "2023-02-13T14:55:18.497007",
+              "end": "2023-02-13T14:55:38.497007"
+            }""")
     ResponseEntity<List<QueueMessageDto>> getMessagesByDate(@RequestBody QueueMessagePeriodDto dto) {
         List<QueueMessageDto> allMessages = queueService.getAllMessages(dto.getQueueName(), dto.getStartDate(), dto.getEndDate());
-
         return ResponseEntity.ok(allMessages);
     }
 
