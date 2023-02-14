@@ -1,19 +1,17 @@
 package com.gp.api.model;
 
+import com.gp.api.model.types.ParamType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class EndpointDto {
-    private String title;
-    private String description;
-    private Set<ParamDto> bodyTemplate;
-    private Set<ParamDto> responseTemplate;
+public class Param {
+    private String key;
+    private String value;
+    private ParamType type;
 }

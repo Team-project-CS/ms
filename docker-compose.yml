@@ -1,8 +1,50 @@
-version: '2'
+version: '3'
+
+networks:
+  web:
+    external: true
+    driver:  bridge
 
 services:
+
+  db:
+    image: "postgres:alpine"
+    container_name: db
+    volumes:
+      - scrapper-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - web
+    environment:
+      POSTGRES_DB: mock
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  back:
+    build: .
+    image: back
+    container_name: back
+    environment:
+      DB_SERVER: db
+      POSTGRES_DB: mock
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      spring_profiles_active: dev
+    networks:
+      - web
+    ports:
+      - "8081:8081"
+    links:
+      - db
+    depends_on:
+      - db
+
   rabbitmq:
     image: rabbitmq:management
     ports:
       - "5672:5672"
       - "15672:15672"
+
+volumes:
+  scrapper-data:
