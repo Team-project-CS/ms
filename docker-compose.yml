@@ -15,7 +15,9 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - web
+      web:
+        aliases:
+          - db
     environment:
       POSTGRES_DB: mock
       POSTGRES_USER: postgres
