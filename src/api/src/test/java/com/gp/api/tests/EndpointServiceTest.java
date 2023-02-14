@@ -8,12 +8,15 @@ import com.gp.api.model.EndpointDto;
 import com.gp.api.model.Param;
 import com.gp.api.model.ParamDto;
 import com.gp.api.model.types.ParamType;
+import com.gp.api.repository.EndpointRepository;
 import com.gp.api.service.EndpointService;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -26,6 +29,14 @@ public class EndpointServiceTest extends BaseTest {
 
     @Autowired
     private EndpointService endpointService;
+
+    @Autowired
+    private EndpointRepository endpointRepository;
+
+    @AfterEach
+    void clearTable() {
+        endpointRepository.deleteAll();
+    }
 
     private static EndpointDto getNormalEndpointDto() {
         return EndpointDto.builder()
@@ -76,6 +87,92 @@ public class EndpointServiceTest extends BaseTest {
                         )
                 )
                 .build();
+    }
+
+    @Test
+    void happyGetEndpointTestCase() {
+        EndpointDto actualEndpoint = getNormalEndpointDto();
+
+        UUID id = endpointService.createEndpoint(actualEndpoint).getId();
+        Endpoint endpoint = endpointService.getEndpoint(id);
+
+        assertEquals(endpoint.getTitle(), actualEndpoint.getTitle());
+        assertEquals(endpoint.getDescription(), actualEndpoint.getDescription());
+        assertEquals(
+                endpoint.getBodyTemplate(),
+                Set.of(
+                        Param.builder()
+                                .key("bodyStrField")
+                                .type(ParamType.STRING)
+                                .build(),
+                        Param.builder()
+                                .key("bodyIntField")
+                                .type(ParamType.INTEGER)
+                                .build(),
+                        Param.builder()
+                                .key("bodyRegexField")
+                                .type(ParamType.REGEX)
+                                .value(".{1,10}")
+                                .build(),
+                        Param.builder()
+                                .key("bodyFixedField")
+                                .type(ParamType.FIXED)
+                                .value("fixed string")
+                                .build()
+                )
+        );
+        assertEquals(
+                endpoint.getResponseTemplate(),
+                Set.of(
+                        Param.builder()
+                                .key("responseStrField")
+                                .type(ParamType.STRING)
+                                .build(),
+                        Param.builder()
+                                .key("responseIntField")
+                                .type(ParamType.INTEGER)
+                                .build(),
+                        Param.builder()
+                                .key("responseRegexField")
+                                .type(ParamType.REGEX)
+                                .value(".{1,10}")
+                                .build(),
+                        Param.builder()
+                                .key("responseFixedField")
+                                .type(ParamType.FIXED)
+                                .value("fixed string")
+                                .build()
+                )
+        );
+    }
+
+    @Test
+    void getEndpointNotFoundUseEndpointCase() {
+        endpointService.createEndpoint(getNormalEndpointDto());
+
+        assertThrows(EndpointNotFoundException.class, () -> endpointService.getEndpoint(UUID.randomUUID()));
+    }
+
+    @Test
+    void getAllThreeEndpointsTestCase() {
+        endpointService.createEndpoint(getNormalEndpointDto());
+        //Iterable<EndpointEntity> all = endpointRepository.findAll();
+        //Iterable<ParamEntity> all1 = paramRepository.findAll();
+        //System.out.printf("");
+        endpointService.createEndpoint(getNormalEndpointDto());
+        endpointService.createEndpoint(getNormalEndpointDto());
+
+        List<Endpoint> allEndpoints = endpointService.getAllEndpoints();
+
+        assertEquals(3, allEndpoints.size());
+
+    }
+
+    @Test
+    void getAllZeroEndpointsTestCase() {
+        List<Endpoint> allEndpoints = endpointService.getAllEndpoints();
+
+        assertEquals(0, allEndpoints.size());
     }
 
     @Test

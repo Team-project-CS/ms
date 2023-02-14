@@ -15,13 +15,11 @@ import com.gp.api.service.EndpointService;
 import com.gp.api.service.ResponseGenerator;
 import com.gp.api.service.mapper.EndpointMapper;
 import lombok.SneakyThrows;
+import org.apache.commons.collections4.IterableUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -51,15 +49,41 @@ public class EndpointServiceImpl implements EndpointService {
     @Override
     public Endpoint createEndpoint(EndpointDto endpointDto) {
         EndpointEntity endpointEntity = endpointRepository.save(endpointMapper.fromDtoToEntity(endpointDto));
-        endpointEntity.getBodyTemplate().addAll(saveBodyTemplate(endpointDto.getBodyTemplate(), endpointEntity));
-        endpointEntity.getResponseTemplate().addAll(saveResponseTemplate(endpointDto.getResponseTemplate(), endpointEntity));
+        Set<ParamEntity> savedBodyTemplate = saveBodyTemplate(endpointDto.getBodyTemplate(), endpointEntity);
+        Set<ParamEntity> savedResponseTemplate = saveResponseTemplate(endpointDto.getResponseTemplate(), endpointEntity);
+        endpointEntity.getBodyTemplate().addAll(savedBodyTemplate);
+        endpointEntity.getResponseTemplate().addAll(savedResponseTemplate);
         return endpointMapper.fromEntityToPojo(endpointEntity);
+    }
+
+    @Override
+    @SneakyThrows
+    public Endpoint getEndpoint(UUID endpointId) {
+        EndpointEntity endpointEntity = endpointRepository.findById(endpointId)
+                .orElseThrow(() -> new EndpointNotFoundException(ENDPOINT_WITH_SPECIFIED_ID_NOT_FOUND));
+        return endpointMapper.fromEntityToPojo(endpointEntity);
+    }
+
+    @Override
+    public List<Endpoint> getAllEndpoints() {
+        return IterableUtils.toList(endpointRepository.findAll()).stream()
+                .map(endpointMapper::fromEntityToPojo)
+                .collect(Collectors.toList());
     }
 
     private Set<ParamEntity> saveBodyTemplate(Set<ParamDto> bodyTemplate, EndpointEntity endpointEntity) {
         return endpointMapper.bodyParamsFromDto(bodyTemplate).stream()
                 .map(paramEntity -> {
                     paramEntity.setBodyEndpointEntity(endpointEntity);
+                    return paramRepository.save(paramEntity);
+                })
+                .collect(Collectors.toSet());
+    }
+
+    private Set<ParamEntity> saveResponseTemplate(Set<ParamDto> responseTemplate, EndpointEntity endpointEntity) {
+        return endpointMapper.responseParamsFromDto(responseTemplate).stream()
+                .map(paramEntity -> {
+                    paramEntity.setResponseEndpointEntity(endpointEntity);
                     return paramRepository.save(paramEntity);
                 })
                 .collect(Collectors.toSet());
@@ -82,15 +106,6 @@ public class EndpointServiceImpl implements EndpointService {
                 .orElseThrow(() -> new EndpointNotFoundException(ENDPOINT_WITH_SPECIFIED_ID_NOT_FOUND));
         endpointRepository.deleteById(endpointId);
         return endpointMapper.fromEntityToPojo(endpointEntity);
-    }
-
-    private Set<ParamEntity> saveResponseTemplate(Set<ParamDto> responseTemplate, EndpointEntity endpointEntity) {
-        return endpointMapper.responseParamsFromDto(responseTemplate).stream()
-                .map(paramEntity -> {
-                    paramEntity.setResponseEndpointEntity(endpointEntity);
-                    return paramRepository.save(paramEntity);
-                })
-                .collect(Collectors.toSet());
     }
 
     private void checkBodyCompliance(Map<String, ?> body, Set<Param> bodyTemplate) {
