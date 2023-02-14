@@ -26,11 +26,13 @@
             <artifactId>api</artifactId>
             <version>${com.gp.api.version}</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>com.gp.q</groupId>
             <artifactId>q</artifactId>
             <version>${com.gp.q.version}</version>
         </dependency>
+        -->
     </dependencies>
 
     <build>
