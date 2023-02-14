@@ -1,6 +1,7 @@
 package com.gp.q.service.impl;
 
 import com.gp.q.model.dto.QueueMessageDto;
+import com.gp.q.model.dto.QueueMessagePeriodDto;
 import com.gp.q.model.entity.QueueMessageEntity;
 import com.gp.q.repository.QueueCrudRepository;
 import com.gp.q.repository.QueueRepository;
@@ -51,8 +52,8 @@ public class QueueServiceImpl implements QueueService {
     }
 
     @Override
-    public List<QueueMessageDto> getAllMessages(String queueName, LocalDateTime begin, LocalDateTime end) {
-        return crudRepository.findByCreationDateBetweenAndName(begin, end, queueName).stream()
+    public List<QueueMessageDto> getAllMessages(QueueMessagePeriodDto dto) {
+        return crudRepository.findByCreationDateBetweenAndName(dto.getStartDate(), dto.getEndDate(), dto.getQueueName()).stream()
                 .map(t -> modelMapper.map(t, QueueMessageDto.class)).toList();
     }
 }

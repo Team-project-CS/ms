@@ -10,9 +10,6 @@ public class ModelMapperConfig {
 
     @Bean
     public ModelMapper modelMapper() {
-        ModelMapper modelMapper = new ModelMapper();
-//        modelMapper.addMappings(new QueueMessagePropertyMap());
-//        modelMapper.addMappings(new QueuePropertyMap());
-        return modelMapper;
+        return new ModelMapper();
     }
 }

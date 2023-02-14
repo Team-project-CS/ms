@@ -30,7 +30,7 @@ public class QueueHistoryController {
               "end": "2023-02-13T14:55:38.497007"
             }""")
     ResponseEntity<List<QueueMessageDto>> getMessagesByDate(@RequestBody QueueMessagePeriodDto dto) {
-        List<QueueMessageDto> allMessages = queueService.getAllMessages(dto.getQueueName(), dto.getStartDate(), dto.getEndDate());
+        List<QueueMessageDto> allMessages = queueService.getAllMessages(dto);
         return ResponseEntity.ok(allMessages);
     }
 

@@ -1,6 +1,7 @@
 package com.gp.q.service;
 
 import com.gp.q.model.dto.QueueMessageDto;
+import com.gp.q.model.dto.QueueMessagePeriodDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,11 +42,8 @@ public interface QueueService {
     /**
      * Возвращает все сообщение когда-либо поступавшие в очередь за указанный период
      *
-     * @param begin     Начало периода
-     * @param end       Конец периода
-     * @param queueName Имя очереди
-     * @return Все сообщение когда-либо поступившие в указанную очередь
+     * @return Все сообщение когда-либо поступившие в указанную очередь за период
      */
-    List<QueueMessageDto> getAllMessages(String queueName, LocalDateTime begin, LocalDateTime end);
+    List<QueueMessageDto> getAllMessages(QueueMessagePeriodDto dto);
 
 }
