@@ -1,8 +1,9 @@
-package com.gp.q.service;
+package com.gp.q.service.impl;
 
 import com.gp.q.model.dto.QueuePropertyDto;
 import com.gp.q.model.entity.QueuePropertyEntity;
 import com.gp.q.repository.QueuePropertyRepository;
+import com.gp.q.service.QueueManagementService;
 import org.modelmapper.ModelMapper;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Queue;
@@ -23,7 +24,6 @@ public class QueueManagementServiceImpl implements QueueManagementService {
 
     @Autowired
     private AmqpAdmin admin;
-
 
     @Override
     public List<QueuePropertyDto> createQueues(List<QueuePropertyDto> queues) {

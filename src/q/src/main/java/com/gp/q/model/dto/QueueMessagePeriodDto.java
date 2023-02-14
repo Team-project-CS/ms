@@ -7,15 +7,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class QueueMessageDto {
+public class QueueMessagePeriodDto {
 
     /**
      * Имя очереди.
@@ -28,18 +28,24 @@ public class QueueMessageDto {
             value = "Queue name. Must not start with 'amq.' and be greater than 255 characters. " +
                     "Available aliases: {'name', 'queue', 'queue_name'}")
     @Pattern(regexp = "^(?!amq[.]).*$")
+    @Pattern(regexp = "^(?!amq[.]).*$")
     @Size(min = 1, max = 255)
-    @JsonProperty("name")
-    @JsonAlias({"queue_name", "queue"})
-    private String name;
-    /**
-     * Полезная нагрузка
-     */
+    @JsonProperty("queue_name")
+    @JsonAlias({"queueName", "name"})
+    private String queueName;
+
     @ApiModelProperty(
-            example = "*****",
-            value = "Message written to or read from the queue. Available aliases: {'message', 'payload'}")
-    @NotNull
-    @JsonProperty("message")
-    @JsonAlias("payload")
-    private String message;
+            example = "2023-02-13T14:55:18.497007",
+            value = "Start time. Available aliases: {'start_date', 'begin', 'begin_date', 'first', 'first_date'}")
+    @JsonProperty("start")
+    @JsonAlias({"start_date", "begin", "begin_date", "first", "first_date"})
+    private LocalDateTime startDate;
+
+    @ApiModelProperty(
+            example = "2023-02-13T14:55:38.497007",
+            value = "End time. Available aliases: {'end', 'end_date', 'last', 'last_date'}")
+    @JsonProperty("end")
+    @JsonAlias({"end_date", "last", "last_date"})
+    private LocalDateTime endDate;
+
 }

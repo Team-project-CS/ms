@@ -15,3 +15,10 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+#        format_sql: true
+#    show-sql: true
+#
+#logging:
+#  level:
+#    org.hibernate.sql: DEBUG
+#    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
