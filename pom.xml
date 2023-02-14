@@ -23,6 +23,8 @@
 		<springfox.version>3.0.0</springfox.version>
 		<testcontainers.version>1.16.3</testcontainers.version>
 		<commons-lang3.version>3.12.0</commons-lang3.version>
+		<docker.image.prefix>ms</docker.image.prefix>
+		<dockerfile-maven-plugin.version>1.4.13</dockerfile-maven-plugin.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -88,6 +90,14 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>dockerfile-maven-plugin</artifactId>
+				<version>${dockerfile-maven-plugin.version}</version>
 				<configuration>
 					<skip>true</skip>
 				</configuration>
