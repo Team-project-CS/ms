@@ -35,13 +35,6 @@ public class QueueController {
         return ResponseEntity.ok(queues);
     }
 
-    @PutMapping("/list")
-    @ApiOperation("update list of queues")
-    ResponseEntity<List<QueuePropertyDto>> updateQueues() {
-        // todo: update
-        throw new RuntimeException("not implemented");
-    }
-
     @DeleteMapping("/list")
     @ApiOperation("delete single queue")
     ResponseEntity<List<QueuePropertyDto>> deleteSingleQueue(@RequestParam String queue) {
