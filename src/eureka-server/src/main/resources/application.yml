@@ -1,0 +1,28 @@
+server:
+  port: 8090
+spring:
+  #  mvc:
+  #    pathmatch:
+  #      matching-strategy: ant_path_matcher
+  #  datasource:
+  #    url: jdbc:h2:mem:testdb
+  #    username: username
+  #    password: password
+  #    driver-class-name: org.h2.Driver
+
+  #  jpa:
+  #    generate-ddl: true
+  #    hibernate:
+  #      ddl-auto: create
+  #    properties:
+  #      hibernate:
+  #        dialect: org.hibernate.dialect.PostgreSQLDialect
+  application:
+    name: eureka-server
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://localhost:${server.port}/eureka
