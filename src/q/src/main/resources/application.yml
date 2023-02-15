@@ -18,3 +18,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   application:
     name: q
+
+  rabbitmq:
+    host: ${RABBIT_HOST}
+    port: ${RABBIT_PORT}

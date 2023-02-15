@@ -50,6 +50,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       spring_profiles_active: dev
+      RABBIT_HOST: rabbitmq
+      RABBIT_PORT: 5672
     networks:
       web:
         aliases:
@@ -68,6 +70,11 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+      interval: 5s
+      timeout: 15s
+      retries: 1
     networks:
       web:
         aliases:
