@@ -2,7 +2,7 @@ stages:
   - ".pre"
   - deploy
   - ".post"
-deploy:
+deploy-job:
   stage: deploy
   script:
     - docker rm $(docker ps -aq) -f
