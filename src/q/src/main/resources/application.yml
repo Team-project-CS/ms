@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 0
 spring:
   mvc:
     pathmatch:
@@ -20,5 +20,12 @@ spring:
     name: q
 
   rabbitmq:
-    host: ${RABBIT_HOST}
-    port: ${RABBIT_PORT}
+    host: ${RABBIT_HOST:}
+    port: ${RABBIT_PORT:}
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
