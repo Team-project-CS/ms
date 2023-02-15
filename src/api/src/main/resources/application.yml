@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8082
 spring:
   mvc:
     pathmatch:
@@ -16,3 +16,5 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  application:
+    name: api
