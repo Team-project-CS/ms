@@ -2,6 +2,7 @@
 [![Docker Image CI](https://github.com/Team-project-CS/ms/actions/workflows/docker-image.yml/badge.svg)](https://github.com/Team-project-CS/ms/actions/workflows/docker-image.yml)
 # Build docker images
 
+test
 ```
 mvn clean package dockerfile:build -DskipTests=true
 ```
