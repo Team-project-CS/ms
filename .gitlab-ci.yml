@@ -16,7 +16,8 @@ prepare-new-images:
   tags:
     - shell
   script:
-    - mvn clean package dockerfile:build -DskipTests=true
+    - $MAVEN_HOME/bin/mvn clean package dockerfile:build -DskipTests=true
+  when: always
 delete-old-images:
   stage: delete-old-images
   tags:
