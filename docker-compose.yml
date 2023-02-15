@@ -3,7 +3,7 @@ version: '3'
 networks:
   web:
     external: true
-    driver:  bridge
+    driver: bridge
 
 services:
 
@@ -23,10 +23,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
 
-  back:
-    build: .
-    image: back
-    container_name: back
+  api:
+    image: ms/api:1
     environment:
       DB_SERVER: db
       POSTGRES_DB: mock
@@ -34,19 +32,46 @@ services:
       POSTGRES_PASSWORD: postgres
       spring_profiles_active: dev
     networks:
-      - web
+      web:
+        aliases:
+          - api
     ports:
-      - "8081:8081"
+      - "8082:8082"
     links:
       - db
     depends_on:
       - db
+
+  q:
+    image: ms/q:1
+    environment:
+      DB_SERVER: db
+      POSTGRES_DB: mock
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      spring_profiles_active: dev
+    networks:
+      web:
+        aliases:
+          - q
+    ports:
+      - "8081:8081"
+    links:
+      - db
+      - rabbitmq
+    depends_on:
+      - db
+      - rabbitmq
 
   rabbitmq:
     image: rabbitmq:management
     ports:
       - "5672:5672"
       - "15672:15672"
+    networks:
+      web:
+        aliases:
+          - rabbitmq
 
 volumes:
   scrapper-data:
