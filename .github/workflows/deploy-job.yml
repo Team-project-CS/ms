@@ -13,14 +13,22 @@ on:
     branches: [ "master", "develop" ]
 
 jobs:
-  build:
-    runs-on: self-hosted
+  runs-on: self-hosted
+  Delete old containers:
     steps:
+      - name: Standard Checkout
+        uses: actions/checkout@v2
       - name: Delete old containers
         run: docker rm $(docker ps -aq) -f
-      - name: Prepare new images
+  Create new images:
+    steps:
+      - name: Create new images
         run: mvn clean package dockerfile:build -DskipTests=true
+  Delete old images:
+    steps:
       - name: Delete old images
         run: docker rmi $(docker images --filter "dangling=true" -q --no-trunc)
-      - name: Start new containers
+  Start new containers:
+    steps:
+      - name: Delete old images
         run: docker-compose up -d
