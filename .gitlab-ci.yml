@@ -1,10 +1,18 @@
 stages:
   - ".pre"
-  - deploy
+  - delete-old-containers
+  - prepare-new-images
+  - start-new-containers
   - ".post"
-deploy-job:
-  stage: deploy
+delete-old-containers:
+  stage: delete-old-containers
   script:
     - docker rm $(docker ps -aq) -f
+prepare-new-images:
+  stage: prepare-new-images
+  script:
     - mvn clean package dockerfile:build -DskipTests=true
+start-new-containers:
+  stage: start-new-containers
+  script:
     - docker-compose up -d
