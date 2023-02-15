@@ -1,0 +1,10 @@
+stages:
+  - ".pre"
+  - deploy
+  - ".post"
+deploy:
+  stage: deploy
+  script:
+    - docker rm $(docker ps -aq) -f
+    - mvn clean package dockerfile:build -DskipTests=true
+    - docker-compose up -d
