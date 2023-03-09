@@ -1,7 +1,7 @@
 package com.gp.api.service;
 
-import com.gp.api.model.Endpoint;
-import com.gp.api.model.EndpointDto;
+import com.gp.api.model.dto.EndpointDto;
+import com.gp.api.model.pojo.Endpoint;
 
 import java.util.List;
 import java.util.Map;

@@ -1,8 +1,8 @@
 package com.gp.api.controller;
 
 
-import com.gp.api.model.Endpoint;
-import com.gp.api.model.EndpointDto;
+import com.gp.api.model.dto.EndpointDto;
+import com.gp.api.model.pojo.Endpoint;
 import com.gp.api.service.EndpointService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
