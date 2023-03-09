@@ -3,17 +3,18 @@ package com.gp.api.service.impl;
 import com.gp.api.exception.throwables.EndpointNotFoundException;
 import com.gp.api.exception.throwables.MandatoryParameterNotSpecifiedException;
 import com.gp.api.exception.throwables.ParameterTypeMismatchException;
-import com.gp.api.model.Endpoint;
-import com.gp.api.model.EndpointDto;
-import com.gp.api.model.Param;
-import com.gp.api.model.ParamDto;
+import com.gp.api.model.dto.EndpointDto;
+import com.gp.api.model.dto.ParamDto;
 import com.gp.api.model.entity.EndpointEntity;
 import com.gp.api.model.entity.ParamEntity;
+import com.gp.api.model.pojo.Endpoint;
+import com.gp.api.model.pojo.Param;
 import com.gp.api.repository.EndpointRepository;
 import com.gp.api.repository.ParamRepository;
 import com.gp.api.service.EndpointService;
 import com.gp.api.service.ResponseGenerator;
 import com.gp.api.service.mapper.EndpointMapper;
+import com.gp.api.service.mapper.ParamsMapper;
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.IterableUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,8 @@ public class EndpointServiceImpl implements EndpointService {
     private ResponseGenerator responseGenerator;
     @Autowired
     private EndpointMapper endpointMapper;
+    @Autowired
+    private ParamsMapper paramsMapper;
 
     private static Predicate<Param> bodyDoesNotContainsKey(Map<String, ?> body) {
         return param -> !body.containsKey(param.getKey());
@@ -72,7 +75,7 @@ public class EndpointServiceImpl implements EndpointService {
     }
 
     private Set<ParamEntity> saveBodyTemplate(Set<ParamDto> bodyTemplate, EndpointEntity endpointEntity) {
-        return endpointMapper.bodyParamsFromDto(bodyTemplate).stream()
+        return paramsMapper.bodyParamsFromDto(bodyTemplate).stream()
                 .map(paramEntity -> {
                     paramEntity.setBodyEndpointEntity(endpointEntity);
                     return paramRepository.save(paramEntity);
@@ -81,7 +84,7 @@ public class EndpointServiceImpl implements EndpointService {
     }
 
     private Set<ParamEntity> saveResponseTemplate(Set<ParamDto> responseTemplate, EndpointEntity endpointEntity) {
-        return endpointMapper.responseParamsFromDto(responseTemplate).stream()
+        return paramsMapper.responseParamsFromDto(responseTemplate).stream()
                 .map(paramEntity -> {
                     paramEntity.setResponseEndpointEntity(endpointEntity);
                     return paramRepository.save(paramEntity);

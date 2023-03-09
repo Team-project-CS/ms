@@ -1,6 +1,6 @@
 package com.gp.api.service.impl;
 
-import com.gp.api.model.Param;
+import com.gp.api.model.pojo.Param;
 import com.gp.api.service.ResponseGenerator;
 import org.cornutum.regexpgen.RandomGen;
 import org.cornutum.regexpgen.js.Provider;

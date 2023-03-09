@@ -1,4 +1,4 @@
-package com.gp.api.model;
+package com.gp.api.model.pojo;
 
 import lombok.Data;
 

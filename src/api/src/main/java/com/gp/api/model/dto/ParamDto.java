@@ -1,4 +1,4 @@
-package com.gp.api.model;
+package com.gp.api.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
