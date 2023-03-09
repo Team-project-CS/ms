@@ -12,6 +12,7 @@ import com.gp.api.repository.EndpointRepository;
 import com.gp.api.service.EndpointService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -90,6 +91,7 @@ public class EndpointServiceTest extends BaseTest {
     }
 
     @Test
+    @DisplayName("Get pre-created endpoint")
     void happyGetEndpointTestCase() {
         EndpointDto actualEndpoint = getNormalEndpointDto();
 
@@ -147,6 +149,7 @@ public class EndpointServiceTest extends BaseTest {
     }
 
     @Test
+    @DisplayName("Try to get endpoint that does not exist")
     void getEndpointNotFoundUseEndpointCase() {
         endpointService.createEndpoint(getNormalEndpointDto());
 
@@ -154,11 +157,9 @@ public class EndpointServiceTest extends BaseTest {
     }
 
     @Test
+    @DisplayName("Get all 3 pre-created endpoints")
     void getAllThreeEndpointsTestCase() {
         endpointService.createEndpoint(getNormalEndpointDto());
-        //Iterable<EndpointEntity> all = endpointRepository.findAll();
-        //Iterable<ParamEntity> all1 = paramRepository.findAll();
-        //System.out.printf("");
         endpointService.createEndpoint(getNormalEndpointDto());
         endpointService.createEndpoint(getNormalEndpointDto());
 
@@ -169,6 +170,7 @@ public class EndpointServiceTest extends BaseTest {
     }
 
     @Test
+    @DisplayName("Get all 0 pre-created endpoints")
     void getAllZeroEndpointsTestCase() {
         List<Endpoint> allEndpoints = endpointService.getAllEndpoints();
 
@@ -176,6 +178,7 @@ public class EndpointServiceTest extends BaseTest {
     }
 
     @Test
+    @DisplayName("Create a valid endpoint")
     void happyCreateEndpointTestCase() {
         EndpointDto actualEndpoint = getNormalEndpointDto();
 
@@ -232,6 +235,62 @@ public class EndpointServiceTest extends BaseTest {
     }
 
     @Test
+    @DisplayName("Create endpoint with upper and lower cases in param types")
+    void happyUpperAndLowerCaseParamTypeCreationTestCase() {
+        EndpointDto actualEndpoint = EndpointDto.builder()
+                .title("test endpoint")
+                .description("endpoint for tests")
+                .bodyTemplate(
+                        Set.of(
+                                ParamDto.builder()
+                                        .key("bodyStrField")
+                                        .type("STR")
+                                        .build(),
+                                ParamDto.builder()
+                                        .key("bodyIntField")
+                                        .type("iNt")
+                                        .build(),
+                                ParamDto.builder()
+                                        .key("bodyRegexField")
+                                        .type("rEgEx")
+                                        .value(".{1,10}")
+                                        .build(),
+                                ParamDto.builder()
+                                        .key("bodyFixedField")
+                                        .type("fixeD")
+                                        .value("fixed string")
+                                        .build()
+                        )
+                )
+                .responseTemplate(
+                        Set.of(
+                                ParamDto.builder()
+                                        .key("responseStrField")
+                                        .type("StR")
+                                        .build(),
+                                ParamDto.builder()
+                                        .key("responseIntField")
+                                        .type("INt")
+                                        .build(),
+                                ParamDto.builder()
+                                        .key("responseRegexField")
+                                        .type("reGex")
+                                        .value(".{1,10}")
+                                        .build(),
+                                ParamDto.builder()
+                                        .key("responseFixedField")
+                                        .type("FIXED")
+                                        .value("fixed string")
+                                        .build()
+                        )
+                )
+                .build();
+
+        assertDoesNotThrow(() -> endpointService.createEndpoint(actualEndpoint));
+    }
+
+    @Test
+    @DisplayName("Try to create endpoint with invalid param type value in body template")
     void InvalidBodyParameterCreateEndpointTestCase() {
         EndpointDto endpointDto = EndpointDto.builder()
                 .bodyTemplate(
@@ -248,6 +307,7 @@ public class EndpointServiceTest extends BaseTest {
     }
 
     @Test
+    @DisplayName("Try to create endpoint with invalid param type value in response template")
     void InvalidResponseParameterCreateEndpointTestCase() {
         EndpointDto endpointDto = EndpointDto.builder()
                 .responseTemplate(
@@ -264,6 +324,7 @@ public class EndpointServiceTest extends BaseTest {
     }
 
     @Test
+    @DisplayName("Try to use endpoint that does not exist")
     void endpointNotFoundUseEndpointCase() {
         endpointService.createEndpoint(getNormalEndpointDto());
 
@@ -271,6 +332,7 @@ public class EndpointServiceTest extends BaseTest {
     }
 
     @Test
+    @DisplayName("Valid use of pre-created endpoint")
     void happyUseEndpointTestCase() {
         EndpointDto normalEndpointDto = getNormalEndpointDto();
 
@@ -293,6 +355,7 @@ public class EndpointServiceTest extends BaseTest {
     }
 
     @Test
+    @DisplayName("Invalid use of pre-created endpoint: mandatory parameter is not specified")
     void mandatoryParamIsNotPresentUseEndpointTestCase() {
         EndpointDto normalEndpointDto = getNormalEndpointDto();
 
@@ -311,6 +374,7 @@ public class EndpointServiceTest extends BaseTest {
     }
 
     @Test
+    @DisplayName("Invalid use of pre-created endpoint: parameter type is mismatched")
     void intInvalidParameterTypeUseEndpointTestCase() {
         EndpointDto normalEndpointDto = getNormalEndpointDto();
 
@@ -330,6 +394,7 @@ public class EndpointServiceTest extends BaseTest {
     }
 
     @Test
+    @DisplayName("Invalid use of pre-created endpoint: regex parameter value is mismatched")
     void regexInvalidParameterTypeUseEndpointTestCase() {
         EndpointDto normalEndpointDto = getNormalEndpointDto();
 
@@ -349,6 +414,7 @@ public class EndpointServiceTest extends BaseTest {
     }
 
     @Test
+    @DisplayName("Delete pre-created endpoint")
     void happyDeleteEndpointCate() {
         EndpointDto endpointDto = getNormalEndpointDto();
         UUID id = endpointService.createEndpoint(endpointDto).getId();
@@ -362,6 +428,7 @@ public class EndpointServiceTest extends BaseTest {
     }
 
     @Test
+    @DisplayName("Try to delete endpoint that does not exist")
     void endpointNotFoundDeleteEndpointCate() {
         endpointService.createEndpoint(getNormalEndpointDto());
 
@@ -369,6 +436,7 @@ public class EndpointServiceTest extends BaseTest {
     }
 
     @Test
+    @DisplayName("Invalid use of pre-created endpoint: fixed parameter value is mismatched")
     void fixedParameterTypeUseEndpointTestCase() {
         EndpointDto normalEndpointDto = getNormalEndpointDto();
 

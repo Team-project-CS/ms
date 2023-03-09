@@ -23,14 +23,14 @@ public class ApiController {
     @Autowired
     private EndpointService endpointService;
 
-    @PostMapping
+    @PostMapping(consumes = "application/json;charset=UTF-8", produces = "application/json;charset=UTF-8")
     @ApiOperation("Create endpoint")
     @ApiResponse(code = 400, message = "Type of parameter in body or response template is invalid")
     public Endpoint createEndpoint(@RequestBody EndpointDto endpointDto) {
         return endpointService.createEndpoint(endpointDto);
     }
 
-    @PostMapping("/{endpointId}")
+    @PostMapping(path = "/{endpointId}", consumes = "application/json;charset=UTF-8", produces = "application/json;charset=UTF-8")
     @ApiOperation("Send body to specified endpoint and get randomly-generated response")
     @ApiResponses({
             @ApiResponse(code = 404, message = "Body parameters does not match the endpoint's body template"),
