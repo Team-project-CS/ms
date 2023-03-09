@@ -35,7 +35,7 @@ public class EndpointMapperImpl extends ModelMapper implements EndpointMapper {
 
     private static ParamType getType(ParamDto paramDto, ParamType[] types) {
         return Arrays.stream(types)
-                .filter(type -> type.getShortType().equals(paramDto.getType()))
+                .filter(type -> type.getShortType().equals(paramDto.getType().toLowerCase()))
                 .findAny()
                 .orElseThrow(IllegalArgumentException::new);
     }
