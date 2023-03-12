@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/queue/history")
+@CrossOrigin
 public class QueueHistoryController {
     @Autowired
     private QueueService queueService;

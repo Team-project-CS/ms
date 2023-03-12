@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/queue")
+@CrossOrigin
 public class QueueController {
     @Autowired
     private QueueService queueService;
