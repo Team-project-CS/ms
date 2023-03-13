@@ -1,9 +1,11 @@
 package com.gp.q.controller;
 
+import com.gp.q.model.QueueMessageDirection;
 import com.gp.q.model.dto.QueueMessageDto;
+import com.gp.q.model.dto.QueueMessageLogDto;
 import com.gp.q.model.dto.QueueMessagePeriodDto;
 import com.gp.q.model.dto.QueuePropertyDto;
-import com.gp.q.model.entity.QueueMessageEntity;
+import com.gp.q.model.entity.QueueMessageLogEntity;
 import com.gp.q.repository.QueueCrudRepository;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
@@ -62,15 +64,15 @@ class QueueHistoryControllerTest {
         QueuePropertyDto queuePropertyDto = new QueuePropertyDto(queueName, "test");
         var createResponse = controller.createQueues(List.of(queuePropertyDto));
         Assertions.assertTrue(createResponse.getStatusCode().is2xxSuccessful());
-
         QueueMessageDto messageDto = new QueueMessageDto(queueName, "message from test");
+        QueueMessageLogDto logDto = new QueueMessageLogDto(messageDto.getName(), messageDto.getMessage(), QueueMessageDirection.IN);
         Assertions.assertTrue(controller.postMessageInQueue(messageDto).getStatusCode().is2xxSuccessful());
 
-        ResponseEntity<List<QueueMessageDto>> messagesByQueueName = historyController.getMessagesByQueueName(queueName);
+        ResponseEntity<List<QueueMessageLogDto>> messagesByQueueName = historyController.getMessagesByQueueName(queueName);
         Assertions.assertTrue(messagesByQueueName.getStatusCode().is2xxSuccessful());
 
         Assertions.assertEquals(1, messagesByQueueName.getBody().size());
-        Assertions.assertEquals(messageDto, messagesByQueueName.getBody().get(0));
+        Assertions.assertEquals(logDto, messagesByQueueName.getBody().get(0));
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -86,17 +88,23 @@ class QueueHistoryControllerTest {
         QueueMessageDto messageDto1 = new QueueMessageDto(queueName, "message from test 1");
         QueueMessageDto messageDto2 = new QueueMessageDto(queueName, "message from test 2");
         QueueMessageDto messageDto3 = new QueueMessageDto(queueName, "message from test 3");
+
+        QueueMessageLogDto logDto1 = new QueueMessageLogDto(messageDto1.getName(), messageDto1.getMessage(), QueueMessageDirection.IN);
+        QueueMessageLogDto logDto2 = new QueueMessageLogDto(messageDto2.getName(), messageDto2.getMessage(), QueueMessageDirection.IN);
+        QueueMessageLogDto logDto3 = new QueueMessageLogDto(messageDto3.getName(), messageDto3.getMessage(), QueueMessageDirection.IN);
+
+
         Assertions.assertTrue(controller.postMessageInQueue(messageDto1).getStatusCode().is2xxSuccessful());
         Assertions.assertTrue(controller.postMessageInQueue(messageDto2).getStatusCode().is2xxSuccessful());
         Assertions.assertTrue(controller.postMessageInQueue(messageDto3).getStatusCode().is2xxSuccessful());
 
-        ResponseEntity<List<QueueMessageDto>> messagesByQueueName = historyController.getMessagesByQueueName(queueName);
+        ResponseEntity<List<QueueMessageLogDto>> messagesByQueueName = historyController.getMessagesByQueueName(queueName);
         Assertions.assertTrue(messagesByQueueName.getStatusCode().is2xxSuccessful());
 
         Assertions.assertEquals(3, messagesByQueueName.getBody().size());
-        Assertions.assertEquals(messageDto1, messagesByQueueName.getBody().get(0));
-        Assertions.assertEquals(messageDto2, messagesByQueueName.getBody().get(1));
-        Assertions.assertEquals(messageDto3, messagesByQueueName.getBody().get(2));
+        Assertions.assertEquals(logDto1, messagesByQueueName.getBody().get(0));
+        Assertions.assertEquals(logDto2, messagesByQueueName.getBody().get(1));
+        Assertions.assertEquals(logDto3, messagesByQueueName.getBody().get(2));
     }
 
     @Autowired
@@ -108,14 +116,17 @@ class QueueHistoryControllerTest {
         String queueName = "getMessagesByDateAll";
         LocalDateTime current = LocalDateTime.now();
 
-        repository.save(new QueueMessageEntity(queueName, "message findByCreatedAtBetween 1", current.minusSeconds(10)));
-        repository.save(new QueueMessageEntity(queueName, "message findByCreatedAtBetween 2", current.minusSeconds(40)));
-        repository.save(new QueueMessageEntity(queueName, "message findByCreatedAtBetween 3", current.minusSeconds(50)));
-        repository.save(new QueueMessageEntity(queueName, "message findByCreatedAtBetween 4", current.minusSeconds(62)));
+        List<QueueMessageLogEntity> list = List.of(
+                new QueueMessageLogEntity(queueName, "message 1", current.minusSeconds(10), QueueMessageDirection.IN),
+                new QueueMessageLogEntity(queueName, "message 2", current.minusSeconds(40), QueueMessageDirection.IN),
+                new QueueMessageLogEntity(queueName, "message 3", current.minusSeconds(50), QueueMessageDirection.IN),
+                new QueueMessageLogEntity(queueName, "message 4", current.minusSeconds(62), QueueMessageDirection.IN));
+
+        repository.saveAll(list);
 
         QueueMessagePeriodDto periodDto = new QueueMessagePeriodDto(queueName, current.minusMinutes(1), current);
 
-        ResponseEntity<List<QueueMessageDto>> messagesByQueueName = historyController.getMessagesByDate(periodDto);
+        ResponseEntity<List<QueueMessageLogDto>> messagesByQueueName = historyController.getMessagesByDate(periodDto);
         Assertions.assertTrue(messagesByQueueName.getStatusCode().is2xxSuccessful());
 
         Assertions.assertEquals(3, messagesByQueueName.getBody().size());
