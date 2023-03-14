@@ -1,5 +1,6 @@
 package com.gp.api.model.pojo;
 
+import com.gp.api.model.types.Method;
 import lombok.Data;
 
 import java.util.Set;
@@ -12,4 +13,5 @@ public class Endpoint {
     private Set<Param> bodyTemplate;
     private Set<Param> responseTemplate;
     private String description;
+    private Method method;
 }

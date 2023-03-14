@@ -1,4 +1,4 @@
-package com.gp.api.service.mapper;
+package com.gp.api.mapper;
 
 import com.gp.api.model.dto.EndpointDto;
 import com.gp.api.model.entity.EndpointEntity;

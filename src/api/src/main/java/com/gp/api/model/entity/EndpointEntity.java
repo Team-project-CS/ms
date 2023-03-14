@@ -1,5 +1,6 @@
 package com.gp.api.model.entity;
 
+import com.gp.api.model.types.Method;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -7,6 +8,7 @@ import lombok.ToString;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -22,12 +24,16 @@ public class EndpointEntity {
     @Id
     @GeneratedValue
     private UUID id;
+    @NotNull
     private String title;
     @OneToMany(mappedBy = "bodyEndpointEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<ParamEntity> bodyTemplate = new HashSet<>();
     @OneToMany(mappedBy = "responseEndpointEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<ParamEntity> responseTemplate = new HashSet<>();
     private String description;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Method method;
 
     @Override
     public boolean equals(Object o) {

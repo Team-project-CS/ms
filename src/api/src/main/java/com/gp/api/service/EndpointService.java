@@ -2,6 +2,7 @@ package com.gp.api.service;
 
 import com.gp.api.model.dto.EndpointDto;
 import com.gp.api.model.pojo.Endpoint;
+import com.gp.api.model.types.Method;
 
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,7 @@ public interface EndpointService {
 
     List<Endpoint> getAllEndpoints();
 
-    Map<String, ?> useEndpoint(UUID endpointId, Map<String, ?> body);
+    Map<String, ?> useEndpoint(UUID endpointId, Map<String, ?> body, Method post);
 
     Endpoint deleteEndpoint(UUID endpointId);
 

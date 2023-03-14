@@ -7,6 +7,7 @@ import com.gp.api.model.dto.EndpointDto;
 import com.gp.api.model.dto.ParamDto;
 import com.gp.api.model.pojo.Endpoint;
 import com.gp.api.model.pojo.Param;
+import com.gp.api.model.types.Method;
 import com.gp.api.model.types.ParamType;
 import com.gp.api.repository.EndpointRepository;
 import com.gp.api.service.EndpointService;
@@ -14,6 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
@@ -87,6 +91,7 @@ public class EndpointServiceTest extends BaseTest {
                                         .build()
                         )
                 )
+                .method("post")
                 .build();
     }
 
@@ -186,6 +191,7 @@ public class EndpointServiceTest extends BaseTest {
 
         assertEquals(endpoint.getTitle(), actualEndpoint.getTitle());
         assertEquals(endpoint.getDescription(), actualEndpoint.getDescription());
+        assertEquals(endpoint.getMethod(), Method.POST);
         assertEquals(
                 endpoint.getBodyTemplate(),
                 Set.of(
@@ -284,6 +290,7 @@ public class EndpointServiceTest extends BaseTest {
                                         .build()
                         )
                 )
+                .method("post")
                 .build();
 
         assertDoesNotThrow(() -> endpointService.createEndpoint(actualEndpoint));
@@ -293,6 +300,7 @@ public class EndpointServiceTest extends BaseTest {
     @DisplayName("Try to create endpoint with invalid param type value in body template")
     void InvalidBodyParameterCreateEndpointTestCase() {
         EndpointDto endpointDto = EndpointDto.builder()
+                .title("endpoint")
                 .bodyTemplate(
                         Set.of(
                                 ParamDto.builder()
@@ -301,6 +309,7 @@ public class EndpointServiceTest extends BaseTest {
                                         .build()
                         )
                 )
+                .method("post")
                 .build();
 
         assertThrows(InvalidBodyTemplateException.class, () -> endpointService.createEndpoint(endpointDto));
@@ -310,6 +319,7 @@ public class EndpointServiceTest extends BaseTest {
     @DisplayName("Try to create endpoint with invalid param type value in response template")
     void InvalidResponseParameterCreateEndpointTestCase() {
         EndpointDto endpointDto = EndpointDto.builder()
+                .title("endpoint")
                 .responseTemplate(
                         Set.of(
                                 ParamDto.builder()
@@ -318,9 +328,36 @@ public class EndpointServiceTest extends BaseTest {
                                         .build()
                         )
                 )
+                .method("post")
                 .build();
 
         assertThrows(InvalidResponseTemplateException.class, () -> endpointService.createEndpoint(endpointDto));
+    }
+
+    @ParameterizedTest
+    @DisplayName("Try to create endpoint with invalid method type")
+    @ValueSource(strings = {"", "   ", "postpostpost", "abc"})
+    @NullSource
+    void InvalidMethodTypeCreateEndpointTestCase(String method) {
+        EndpointDto endpointDto = EndpointDto.builder()
+                .title("endpoint")
+                .method(method)
+                .build();
+
+        assertThrows(InvalidEndpointMethodException.class, () -> endpointService.createEndpoint(endpointDto));
+    }
+
+    @ParameterizedTest
+    @DisplayName("Try to create endpoint with invalid title")
+    @ValueSource(strings = {"", "   "})
+    @NullSource
+    void InvalidMethodTitleCreateEndpointTestCase(String title) {
+        EndpointDto endpointDto = EndpointDto.builder()
+                .title(title)
+                .method("post")
+                .build();
+
+        assertThrows(InvalidEndpointTitleException.class, () -> endpointService.createEndpoint(endpointDto));
     }
 
     @Test
@@ -328,7 +365,7 @@ public class EndpointServiceTest extends BaseTest {
     void endpointNotFoundUseEndpointCase() {
         endpointService.createEndpoint(getNormalEndpointDto());
 
-        assertThrows(EndpointNotFoundException.class, () -> endpointService.useEndpoint(UUID.randomUUID(), Map.of()));
+        assertThrows(EndpointNotFoundException.class, () -> endpointService.useEndpoint(UUID.randomUUID(), Map.of(), Method.POST));
     }
 
     @Test
@@ -345,13 +382,32 @@ public class EndpointServiceTest extends BaseTest {
                         "bodyIntField", 1024,
                         "bodyRegexField", "ab1?%",
                         "bodyFixedField", "fixed string"
-                )
-        );
+                ),
+                Method.POST);
 
         assertTrue(response.get("responseStrField") instanceof String);
         assertDoesNotThrow(() -> Integer.parseInt(response.get("responseIntField").toString()));
-        //assertTrue(response.get("responseRegexField").toString().matches(".{1,10}"));
         assertEquals(response.get("responseFixedField"), "fixed string");
+    }
+
+    @Test
+    @DisplayName("Invalid use of pre-created endpoint: endpoint method is different from specified")
+    void endpointMethodIsDifferentTestCase() {
+        EndpointDto normalEndpointDto = getNormalEndpointDto();
+
+        UUID id = endpointService.createEndpoint(normalEndpointDto).getId();
+
+        EndpointHasDifferentMethodException e = assertThrows(EndpointHasDifferentMethodException.class, () ->
+                endpointService.useEndpoint(
+                        id,
+                        Map.of(
+                                "bodyStrField", "some string",
+                                "bodyIntField", 1024,
+                                "bodyRegexField", "ab1?%",
+                                "bodyFixedField", "fixed string"
+                        ),
+                        Method.GET));
+        assertEquals(e.getMessage(), "Endpoint's method is post, got get");
     }
 
     @Test
@@ -368,8 +424,8 @@ public class EndpointServiceTest extends BaseTest {
                                 "bodyIntField", 1024,
                                 "bodyRegexField", "ab1?%",
                                 "bodyFixedField", "fixed string"
-                        )
-                ));
+                        ),
+                        Method.POST));
         assertEquals(e.getMessage(), "Mandatory parameter bodyStrField not found");
     }
 
@@ -388,8 +444,8 @@ public class EndpointServiceTest extends BaseTest {
                                 "bodyIntField", "it must be int",
                                 "bodyRegexField", "ab1?%",
                                 "bodyFixedField", "fixed string"
-                        )
-                ));
+                        ),
+                        Method.POST));
         assertEquals(e.getMessage(), "Body parameter bodyIntField value is invalid");
     }
 
@@ -398,18 +454,18 @@ public class EndpointServiceTest extends BaseTest {
     void regexInvalidParameterTypeUseEndpointTestCase() {
         EndpointDto normalEndpointDto = getNormalEndpointDto();
 
-        Endpoint id = endpointService.createEndpoint(normalEndpointDto);
+        Endpoint endpoint = endpointService.createEndpoint(normalEndpointDto);
 
         ParameterTypeMismatchException e = assertThrows(ParameterTypeMismatchException.class, () ->
                 endpointService.useEndpoint(
-                        id.getId(),
+                        endpoint.getId(),
                         Map.of(
                                 "bodyStrField", "some string",
                                 "bodyIntField", 1024,
                                 "bodyRegexField", "it must have only 10 symbols",
                                 "bodyFixedField", "fixed string"
-                        )
-                ));
+                        ),
+                        Method.POST));
         assertEquals(e.getMessage(), "Body parameter bodyRegexField value does not match regex [.{1,10}]");
     }
 
@@ -450,8 +506,8 @@ public class EndpointServiceTest extends BaseTest {
                                 "bodyIntField", 1024,
                                 "bodyRegexField", "ab1?%",
                                 "bodyFixedField", "this is wrong fixed string"
-                        )
-                ));
+                        ),
+                        Method.POST));
         assertEquals(e.getMessage(), "Body parameter bodyFixedField value does not match fixed value [fixed string]");
     }
 }
