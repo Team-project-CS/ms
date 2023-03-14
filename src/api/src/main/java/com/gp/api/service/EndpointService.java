@@ -15,7 +15,7 @@ public interface EndpointService {
 
     List<Endpoint> getAllEndpoints();
 
-    Map<String, ?> useEndpoint(UUID endpointId, Map<String, ?> body, Method post);
+    Map<String, ?> useEndpoint(UUID endpointId, Map<String, ?> body, Method method);
 
     Endpoint deleteEndpoint(UUID endpointId);
 
