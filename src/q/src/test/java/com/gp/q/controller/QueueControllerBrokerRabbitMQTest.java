@@ -25,9 +25,9 @@ import java.util.List;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@ContextConfiguration(initializers = QueueControllerRabbitMQTest.Initializer.class)
+@ContextConfiguration(initializers = QueueControllerBrokerRabbitMQTest.Initializer.class)
 @Testcontainers
-class QueueControllerRabbitMQTest {
+class QueueControllerBrokerRabbitMQTest {
 
     @SuppressWarnings("rawtypes")
     @Container

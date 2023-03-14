@@ -1,13 +1,16 @@
 package com.gp.q.repository;
 
-import com.gp.q.model.entity.QueueMessageLogEntity;
+import com.gp.q.model.entity.QueueLogEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-public interface QueueCrudRepository extends JpaRepository<QueueMessageLogEntity, UUID> {
+/**
+ * Репозиторий для логирования взаимодействий с очередью
+ */
+public interface QueueLogRepository extends JpaRepository<QueueLogEntity, UUID> {
 
     /**
      * Возвращает все сообщение когда-либо поступавшие в очередь
@@ -15,7 +18,7 @@ public interface QueueCrudRepository extends JpaRepository<QueueMessageLogEntity
      * @param name Имя очереди
      * @return Все сообщение когда-либо в указанную очередь
      */
-    List<QueueMessageLogEntity> findAllByName(String name);
+    List<QueueLogEntity> findAllByName(String name);
 
     /**
      * Возвращает все сообщение когда-либо поступавшие в очередь за указанный период
@@ -24,7 +27,7 @@ public interface QueueCrudRepository extends JpaRepository<QueueMessageLogEntity
      * @param endDate   Конец периода
      * @return Все сообщение поступившие за указанный период
      */
-    List<QueueMessageLogEntity> findByCreationDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+    List<QueueLogEntity> findByCreationDateBetween(LocalDateTime startDate, LocalDateTime endDate);
 
     /**
      * Возвращает все сообщение когда-либо поступавшие в очередь за указанный период
@@ -34,5 +37,5 @@ public interface QueueCrudRepository extends JpaRepository<QueueMessageLogEntity
      * @param name      Имя очереди
      * @return Все сообщение поступившие в указанную очередь за период
      */
-    List<QueueMessageLogEntity> findByCreationDateBetweenAndName(LocalDateTime startDate, LocalDateTime endDate, String name);
+    List<QueueLogEntity> findByCreationDateBetweenAndName(LocalDateTime startDate, LocalDateTime endDate, String name);
 }

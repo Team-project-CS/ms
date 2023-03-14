@@ -1,8 +1,8 @@
 package com.gp.q.controller;
 
 import com.gp.q.model.QueueMessageDirection;
+import com.gp.q.model.dto.QueueLogDto;
 import com.gp.q.model.dto.QueueMessageDto;
-import com.gp.q.model.dto.QueueMessageLogDto;
 import com.gp.q.model.dto.QueuePropertyDto;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
@@ -45,11 +45,11 @@ class QueueHistoryControllerInOutTest {
         QueueMessageDto messageDto = new QueueMessageDto(queueName, "message from test");
         Assertions.assertTrue(controller.postMessageInQueue(messageDto).getStatusCode().is2xxSuccessful());
 
-        ResponseEntity<List<QueueMessageLogDto>> messagesByQueueName = historyController.getMessagesByQueueName(queueName);
+        ResponseEntity<List<QueueLogDto>> messagesByQueueName = historyController.getMessagesByQueueName(queueName);
         Assertions.assertTrue(messagesByQueueName.getStatusCode().is2xxSuccessful());
 
 
-        QueueMessageLogDto inDto = new QueueMessageLogDto(messageDto.getName(), messageDto.getMessage(), QueueMessageDirection.IN);
+        QueueLogDto inDto = new QueueLogDto(messageDto.getName(), messageDto.getMessage(), QueueMessageDirection.IN);
 
         Assertions.assertEquals(1, messagesByQueueName.getBody().size());
         Assertions.assertEquals(inDto, messagesByQueueName.getBody().get(0));
@@ -72,11 +72,11 @@ class QueueHistoryControllerInOutTest {
         Assertions.assertTrue(controller.getMessageFromQueue(queueName).getStatusCode().is2xxSuccessful());
 
         // Собираем логи очереди
-        ResponseEntity<List<QueueMessageLogDto>> messagesByQueueName = historyController.getMessagesByQueueName(queueName);
+        ResponseEntity<List<QueueLogDto>> messagesByQueueName = historyController.getMessagesByQueueName(queueName);
         Assertions.assertTrue(messagesByQueueName.getStatusCode().is2xxSuccessful());
 
-        QueueMessageLogDto inDto = new QueueMessageLogDto(messageDto.getName(), messageDto.getMessage(), QueueMessageDirection.IN);
-        QueueMessageLogDto outDto = new QueueMessageLogDto(messageDto.getName(), messageDto.getMessage(), QueueMessageDirection.OUT);
+        QueueLogDto inDto = new QueueLogDto(messageDto.getName(), messageDto.getMessage(), QueueMessageDirection.IN);
+        QueueLogDto outDto = new QueueLogDto(messageDto.getName(), messageDto.getMessage(), QueueMessageDirection.OUT);
 
         // Проверяем 2 лога - чтение и запись
         Assertions.assertEquals(2, messagesByQueueName.getBody().size());

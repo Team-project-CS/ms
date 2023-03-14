@@ -2,6 +2,7 @@ package com.gp.q.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.gp.q.controller.QueueController;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +12,9 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-
+/**
+ * Используется {@link QueueController} для вставки в очередь или для чтения из нее.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

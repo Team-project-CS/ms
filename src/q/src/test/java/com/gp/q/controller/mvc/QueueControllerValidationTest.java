@@ -1,4 +1,4 @@
-package com.gp.q.controller;
+package com.gp.q.controller.mvc;
 
 import com.gp.q.service.QueueService;
 import org.junit.jupiter.api.Assertions;

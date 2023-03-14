@@ -1,6 +1,8 @@
 package com.gp.q.repository;
 
 import com.gp.q.model.entity.QueueMessageEntity;
+import com.gp.q.repository.broker.BrokerRabbitMQ;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -24,18 +26,24 @@ import static org.awaitility.Awaitility.await;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@ContextConfiguration(initializers = QueueRepositoryRabbitMQTest.Initializer.class)
+@ContextConfiguration(initializers = BrokerRabbitMQTest.Initializer.class)
 @Testcontainers
-class QueueRepositoryRabbitMQTest {
+class BrokerRabbitMQTest {
 
+    @SuppressWarnings("rawtypes")
     @Container
     public static GenericContainer rabbit = new GenericContainer("rabbitmq:3-management")
             .withExposedPorts(5672, 15672);
+    @Autowired
+    private BrokerRabbitMQ repository;
+
+    @Autowired
+    private AmqpAdmin admin;
 
     public static class Initializer implements
             ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override
-        public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
+        public void initialize(@NotNull ConfigurableApplicationContext configurableApplicationContext) {
             TestPropertyValues values = TestPropertyValues.of(
                     "spring.rabbitmq.host=" + rabbit.getContainerIpAddress(),
                     "spring.rabbitmq.port=" + rabbit.getMappedPort(5672)
@@ -43,11 +51,6 @@ class QueueRepositoryRabbitMQTest {
             values.applyTo(configurableApplicationContext);
         }
     }
-
-    @Autowired
-    private AmqpAdmin admin;
-    @Autowired
-    private QueueRepositoryRabbitMQ repository;
 
     @Test
     void test() {

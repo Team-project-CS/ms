@@ -2,6 +2,7 @@ package com.gp.q.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.gp.q.controller.QueueHistoryController;
 import com.gp.q.model.QueueMessageDirection;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -14,10 +15,13 @@ import java.util.Objects;
 
 import static java.time.temporal.ChronoField.MINUTE_OF_DAY;
 
-
+/**
+ * Используется для GET запросов {@link QueueHistoryController}.
+ * Содержит имя очереди, сообщение, совершаемых над очередью операций и их время выполнения.
+ */
 @Data
 @NoArgsConstructor
-public class QueueMessageLogDto {
+public class QueueLogDto {
 
     @ApiModelProperty(
             example = "queue1",
@@ -41,13 +45,13 @@ public class QueueMessageLogDto {
     @ApiModelProperty(
             example = "14-03-2023 03:11:26",
             value = "Date and time at which the message was pushed or popped from the queue")
-    private LocalDateTime creationDate  = LocalDateTime.now();
+    private LocalDateTime creationDate = LocalDateTime.now();
 
-    public QueueMessageLogDto(String name, @NotNull String message, QueueMessageDirection direction) {
+    public QueueLogDto(String name, @NotNull String message, QueueMessageDirection direction) {
         this(name, message, direction, LocalDateTime.now());
     }
 
-    public QueueMessageLogDto(String name, @NotNull String message, QueueMessageDirection direction, LocalDateTime creationDate) {
+    public QueueLogDto(String name, @NotNull String message, QueueMessageDirection direction, LocalDateTime creationDate) {
         this.name = name;
         this.message = message;
         this.direction = direction;
@@ -59,7 +63,7 @@ public class QueueMessageLogDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        QueueMessageLogDto that = (QueueMessageLogDto) o;
+        QueueLogDto that = (QueueLogDto) o;
 
         if (!name.equals(that.name)) return false;
         if (!message.equals(that.message)) return false;
