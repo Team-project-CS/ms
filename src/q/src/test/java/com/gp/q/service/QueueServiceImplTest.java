@@ -1,6 +1,7 @@
 package com.gp.q.service;
 
 import com.gp.q.model.dto.QueueMessageDto;
+import com.gp.q.model.dto.QueueMessageLogDto;
 import com.gp.q.model.dto.QueuePropertyDto;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
@@ -55,7 +56,7 @@ class QueueServiceImplTest {
 
         LocalDateTime begin = LocalDateTime.of(LocalDate.MIN, LocalTime.MAX);
         LocalDateTime end = LocalDateTime.now();
-        List<QueueMessageDto> remaining = service.getAllMessages(begin, end);
+        List<QueueMessageLogDto> remaining = service.getAllMessages(begin, end);
 
         Assertions.assertTrue(remaining.isEmpty());
     }

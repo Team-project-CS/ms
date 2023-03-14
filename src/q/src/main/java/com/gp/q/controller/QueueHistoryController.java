@@ -1,6 +1,6 @@
 package com.gp.q.controller;
 
-import com.gp.q.model.dto.QueueMessageDto;
+import com.gp.q.model.dto.QueueMessageLogDto;
 import com.gp.q.model.dto.QueueMessagePeriodDto;
 import com.gp.q.service.QueueService;
 import io.swagger.annotations.ApiOperation;
@@ -19,7 +19,7 @@ public class QueueHistoryController {
 
     @GetMapping("/{queueName}")
     @ApiOperation("return all messages ever received in the queue")
-    ResponseEntity<List<QueueMessageDto>> getMessagesByQueueName(@PathVariable String queueName) {
+    ResponseEntity<List<QueueMessageLogDto>> getMessagesByQueueName(@PathVariable String queueName) {
         return ResponseEntity.ok(queueService.getAllMessages(queueName));
     }
 
@@ -30,9 +30,8 @@ public class QueueHistoryController {
               "start": "2023-02-13T14:55:18.497007",
               "end": "2023-02-13T14:55:38.497007"
             }""")
-    ResponseEntity<List<QueueMessageDto>> getMessagesByDate(@RequestBody QueueMessagePeriodDto dto) {
-        List<QueueMessageDto> allMessages = queueService.getAllMessages(dto);
-        return ResponseEntity.ok(allMessages);
+    ResponseEntity<List<QueueMessageLogDto>> getMessagesByDate(@RequestBody QueueMessagePeriodDto dto) {
+        return ResponseEntity.ok(queueService.getAllMessages(dto));
     }
 
 }
