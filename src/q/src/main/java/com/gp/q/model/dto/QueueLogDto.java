@@ -41,7 +41,7 @@ public class QueueLogDto {
     private QueueMessageDirection direction;
 
     @JsonProperty("creation")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     @ApiModelProperty(
             example = "14-03-2023 03:11:26",
             value = "Date and time at which the message was pushed or popped from the queue")

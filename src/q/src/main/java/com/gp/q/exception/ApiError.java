@@ -19,7 +19,7 @@ public class ApiError {
     private String message;
     @JsonProperty
     private HttpStatus status;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime timestamp;
     @JsonProperty
     private String path;
