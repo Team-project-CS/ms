@@ -5,8 +5,7 @@ import com.gp.q.model.dto.QueueLogDto;
 import com.gp.q.model.dto.QueueMessageDto;
 import com.gp.q.model.dto.QueuePropertyDto;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,6 +25,7 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @ContextConfiguration(initializers = QueueHistoryControllerInOutTest.Initializer.class)
 @Testcontainers
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class QueueHistoryControllerInOutTest {
 
     @SuppressWarnings("rawtypes")
@@ -37,10 +37,24 @@ class QueueHistoryControllerInOutTest {
     @Autowired
     private QueueHistoryController historyController;
 
+    @Test
+    @Order(1)
+    void pushInNonExist() {
+        String queueName = "non-existent";
+
+        QueueMessageDto messageDto = new QueueMessageDto(queueName, "message from test");
+        Assertions.assertThrows(Exception.class, () -> controller.postMessageInQueue(messageDto));
+    }
+
     @SuppressWarnings("ConstantConditions")
     @Test
     void pushIn() {
         String queueName = "pushIn";
+
+        // Создаем очередь через контроллер
+        Assertions.assertTrue(controller.createQueues(
+                        List.of(new QueuePropertyDto(queueName, "test")))
+                .getStatusCode().is2xxSuccessful());
 
         QueueMessageDto messageDto = new QueueMessageDto(queueName, "message from test");
         Assertions.assertTrue(controller.postMessageInQueue(messageDto).getStatusCode().is2xxSuccessful());
