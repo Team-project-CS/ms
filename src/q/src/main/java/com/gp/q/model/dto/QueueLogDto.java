@@ -17,7 +17,7 @@ import static java.time.temporal.ChronoField.MINUTE_OF_DAY;
 
 @Data
 @NoArgsConstructor
-public class QueueMessageLogDto {
+public class QueueLogDto {
 
     @ApiModelProperty(
             example = "queue1",
@@ -43,11 +43,11 @@ public class QueueMessageLogDto {
             value = "Date and time at which the message was pushed or popped from the queue")
     private LocalDateTime creationDate  = LocalDateTime.now();
 
-    public QueueMessageLogDto(String name, @NotNull String message, QueueMessageDirection direction) {
+    public QueueLogDto(String name, @NotNull String message, QueueMessageDirection direction) {
         this(name, message, direction, LocalDateTime.now());
     }
 
-    public QueueMessageLogDto(String name, @NotNull String message, QueueMessageDirection direction, LocalDateTime creationDate) {
+    public QueueLogDto(String name, @NotNull String message, QueueMessageDirection direction, LocalDateTime creationDate) {
         this.name = name;
         this.message = message;
         this.direction = direction;
@@ -59,7 +59,7 @@ public class QueueMessageLogDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        QueueMessageLogDto that = (QueueMessageLogDto) o;
+        QueueLogDto that = (QueueLogDto) o;
 
         if (!name.equals(that.name)) return false;
         if (!message.equals(that.message)) return false;

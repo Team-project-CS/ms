@@ -16,7 +16,7 @@ import java.util.UUID;
 @Table(name = "queue")
 @Data
 @NoArgsConstructor
-public class QueueMessageLogEntity {
+public class QueueLogEntity {
     @Id
     @GeneratedValue
     private UUID id;
@@ -31,7 +31,7 @@ public class QueueMessageLogEntity {
      * @param creationDate Время создания
      * @param direction    Указывает направления поступления сообщения в очередь
      */
-    public QueueMessageLogEntity(String name, String message, LocalDateTime creationDate, QueueMessageDirection direction) {
+    public QueueLogEntity(String name, String message, LocalDateTime creationDate, QueueMessageDirection direction) {
         this.name = name;
         this.message = message;
         this.creationDate = creationDate;
@@ -42,7 +42,7 @@ public class QueueMessageLogEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        QueueMessageLogEntity that = (QueueMessageLogEntity) o;
+        QueueLogEntity that = (QueueLogEntity) o;
         return id.equals(that.id) && name.equals(that.name) && message.equals(that.message) && direction == that.direction;
     }
 

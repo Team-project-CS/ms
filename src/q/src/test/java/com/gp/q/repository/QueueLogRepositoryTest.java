@@ -1,7 +1,7 @@
 package com.gp.q.repository;
 
 import com.gp.q.model.QueueMessageDirection;
-import com.gp.q.model.entity.QueueMessageLogEntity;
+import com.gp.q.model.entity.QueueLogEntity;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.*;
 import org.junit.runner.RunWith;
@@ -52,11 +52,11 @@ class QueueLogRepositoryTest {
     @Order(1)
     void repositoryFindAll() {
         String queueName = "repositoryFindAll";
-        QueueMessageLogEntity entity = new QueueMessageLogEntity(queueName, "message", LocalDateTime.now(), QueueMessageDirection.IN);
+        QueueLogEntity entity = new QueueLogEntity(queueName, "message", LocalDateTime.now(), QueueMessageDirection.IN);
 
         repository.save(entity);
 
-        List<QueueMessageLogEntity> messages = repository.findAll();
+        List<QueueLogEntity> messages = repository.findAll();
         Assertions.assertFalse(messages.isEmpty());
     }
 
@@ -65,11 +65,11 @@ class QueueLogRepositoryTest {
     void repositoryFindAllByQueueName1() {
         String queueName = "repositoryFindAllByQueueName1";
 
-        QueueMessageLogEntity entity = new QueueMessageLogEntity(queueName, "message", LocalDateTime.now(), QueueMessageDirection.IN);
+        QueueLogEntity entity = new QueueLogEntity(queueName, "message", LocalDateTime.now(), QueueMessageDirection.IN);
 
         repository.save(entity);
 
-        List<QueueMessageLogEntity> messages = repository.findAllByName(queueName);
+        List<QueueLogEntity> messages = repository.findAllByName(queueName);
         Assertions.assertEquals(1, messages.size());
         Assertions.assertEquals(entity, messages.get(0));
 
@@ -78,15 +78,15 @@ class QueueLogRepositoryTest {
     @Test
     void repositoryFindAllByQueueName3() {
         String queueName = "repositoryFindAllByQueueName3";
-        QueueMessageLogEntity entity1 = new QueueMessageLogEntity(queueName, "message 1", LocalDateTime.now(), QueueMessageDirection.IN);
-        QueueMessageLogEntity entity2 = new QueueMessageLogEntity(queueName, "message 2", LocalDateTime.now(), QueueMessageDirection.IN);
-        QueueMessageLogEntity entity3 = new QueueMessageLogEntity(queueName, "message 3", LocalDateTime.now(), QueueMessageDirection.IN);
+        QueueLogEntity entity1 = new QueueLogEntity(queueName, "message 1", LocalDateTime.now(), QueueMessageDirection.IN);
+        QueueLogEntity entity2 = new QueueLogEntity(queueName, "message 2", LocalDateTime.now(), QueueMessageDirection.IN);
+        QueueLogEntity entity3 = new QueueLogEntity(queueName, "message 3", LocalDateTime.now(), QueueMessageDirection.IN);
 
         repository.save(entity1);
         repository.save(entity2);
         repository.save(entity3);
 
-        List<QueueMessageLogEntity> messages = repository.findAllByName(queueName);
+        List<QueueLogEntity> messages = repository.findAllByName(queueName);
         Assertions.assertEquals(3, messages.size());
 
     }
@@ -96,9 +96,9 @@ class QueueLogRepositoryTest {
         String queueName1 = "repositoryFindAllByQueueName2Queue_1";
         String queueName2 = "repositoryFindAllByQueueName2Queue_2";
 
-        QueueMessageLogEntity entity1 = new QueueMessageLogEntity(queueName1, "message 1", LocalDateTime.now(), QueueMessageDirection.IN);
-        QueueMessageLogEntity entity2 = new QueueMessageLogEntity(queueName2, "message 2", LocalDateTime.now(), QueueMessageDirection.IN);
-        QueueMessageLogEntity entity3 = new QueueMessageLogEntity(queueName2, "message 3", LocalDateTime.now(), QueueMessageDirection.IN);
+        QueueLogEntity entity1 = new QueueLogEntity(queueName1, "message 1", LocalDateTime.now(), QueueMessageDirection.IN);
+        QueueLogEntity entity2 = new QueueLogEntity(queueName2, "message 2", LocalDateTime.now(), QueueMessageDirection.IN);
+        QueueLogEntity entity3 = new QueueLogEntity(queueName2, "message 3", LocalDateTime.now(), QueueMessageDirection.IN);
 
         repository.save(entity1);
         repository.save(entity2);
@@ -125,9 +125,9 @@ class QueueLogRepositoryTest {
         LocalDateTime endDate = LocalDateTime.of(LocalDate.of(2024, 1, 1), LocalTime.of(23, 1, 1));
 
         LocalDateTime current = LocalDateTime.of(LocalDate.of(2023, 1, 1), LocalTime.of(23, 1, 1));
-        QueueMessageLogEntity entity1 = new QueueMessageLogEntity(queueName, "message 1", current, QueueMessageDirection.IN);
-        QueueMessageLogEntity entity2 = new QueueMessageLogEntity(queueName, "message 2", current.plusMinutes(1), QueueMessageDirection.IN);
-        QueueMessageLogEntity entity3 = new QueueMessageLogEntity(queueName, "message 3", current.plusMinutes(2), QueueMessageDirection.IN);
+        QueueLogEntity entity1 = new QueueLogEntity(queueName, "message 1", current, QueueMessageDirection.IN);
+        QueueLogEntity entity2 = new QueueLogEntity(queueName, "message 2", current.plusMinutes(1), QueueMessageDirection.IN);
+        QueueLogEntity entity3 = new QueueLogEntity(queueName, "message 3", current.plusMinutes(2), QueueMessageDirection.IN);
 
         repository.save(entity1);
         repository.save(entity2);
@@ -146,13 +146,13 @@ class QueueLogRepositoryTest {
         LocalDateTime current = LocalDateTime.of(LocalDate.of(2023, 1, 1), LocalTime.of(23, 1, 1));
 
 
-        repository.save(new QueueMessageLogEntity(queueName, "message 1", current, QueueMessageDirection.IN));
-        repository.save(new QueueMessageLogEntity(queueName, "message findByCreatedAtBetween 2", current.plusMinutes(1), QueueMessageDirection.IN));
+        repository.save(new QueueLogEntity(queueName, "message 1", current, QueueMessageDirection.IN));
+        repository.save(new QueueLogEntity(queueName, "message findByCreatedAtBetween 2", current.plusMinutes(1), QueueMessageDirection.IN));
 
-        repository.save(new QueueMessageLogEntity(queueName2, "message findByCreatedAtBetween 1", current, QueueMessageDirection.IN));
-        repository.save(new QueueMessageLogEntity(queueName2, "message findByCreatedAtBetween 2", current.plusMinutes(10), QueueMessageDirection.IN));
-        repository.save(new QueueMessageLogEntity(queueName2, "message findByCreatedAtBetween 3", current.plusMinutes(11), QueueMessageDirection.IN));
-        repository.save(new QueueMessageLogEntity(queueName2, "message findByCreatedAtBetween 4", current.plusMinutes(12), QueueMessageDirection.IN));
+        repository.save(new QueueLogEntity(queueName2, "message findByCreatedAtBetween 1", current, QueueMessageDirection.IN));
+        repository.save(new QueueLogEntity(queueName2, "message findByCreatedAtBetween 2", current.plusMinutes(10), QueueMessageDirection.IN));
+        repository.save(new QueueLogEntity(queueName2, "message findByCreatedAtBetween 3", current.plusMinutes(11), QueueMessageDirection.IN));
+        repository.save(new QueueLogEntity(queueName2, "message findByCreatedAtBetween 4", current.plusMinutes(12), QueueMessageDirection.IN));
 
         Assertions.assertEquals(2, repository.findByCreationDateBetweenAndName(startDate, endDate, queueName).size());
         Assertions.assertEquals(4, repository.findByCreationDateBetweenAndName(startDate, endDate, queueName2).size());

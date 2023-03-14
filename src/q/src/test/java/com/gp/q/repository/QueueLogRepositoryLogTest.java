@@ -1,7 +1,7 @@
 package com.gp.q.repository;
 
 import com.gp.q.model.QueueMessageDirection;
-import com.gp.q.model.entity.QueueMessageLogEntity;
+import com.gp.q.model.entity.QueueLogEntity;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.*;
 import org.junit.runner.RunWith;
@@ -37,13 +37,13 @@ class QueueLogRepositoryLogTest {
     @Order(1)
     void repositoryFindAllByNameSingleInOut() {
         String queueName = "repositoryFindAllSingleInOut";
-        QueueMessageLogEntity entity = new QueueMessageLogEntity(queueName, "message", LocalDateTime.now(), QueueMessageDirection.IN);
-        QueueMessageLogEntity entity2 = new QueueMessageLogEntity(queueName, "message", LocalDateTime.now(), QueueMessageDirection.OUT);
+        QueueLogEntity entity = new QueueLogEntity(queueName, "message", LocalDateTime.now(), QueueMessageDirection.IN);
+        QueueLogEntity entity2 = new QueueLogEntity(queueName, "message", LocalDateTime.now(), QueueMessageDirection.OUT);
 
         repository.save(entity);
         repository.save(entity2);
 
-        List<QueueMessageLogEntity> messages = repository.findAllByName(queueName);
+        List<QueueLogEntity> messages = repository.findAllByName(queueName);
         Assertions.assertEquals(2, messages.size());
     }
 
@@ -51,13 +51,13 @@ class QueueLogRepositoryLogTest {
     @Order(2)
     void repositoryFindAllByName() {
         String queueName = "repositoryFindAllByName";
-        List<QueueMessageLogEntity> list = List.of(new QueueMessageLogEntity(queueName, "message 1", LocalDateTime.now(), QueueMessageDirection.IN),
-                new QueueMessageLogEntity(queueName, "message 2", LocalDateTime.now(), QueueMessageDirection.OUT),
-                new QueueMessageLogEntity(queueName, "message 3", LocalDateTime.now(), QueueMessageDirection.IN));
+        List<QueueLogEntity> list = List.of(new QueueLogEntity(queueName, "message 1", LocalDateTime.now(), QueueMessageDirection.IN),
+                new QueueLogEntity(queueName, "message 2", LocalDateTime.now(), QueueMessageDirection.OUT),
+                new QueueLogEntity(queueName, "message 3", LocalDateTime.now(), QueueMessageDirection.IN));
 
         repository.saveAll(list);
 
-        List<QueueMessageLogEntity> messages = repository.findAllByName(queueName);
+        List<QueueLogEntity> messages = repository.findAllByName(queueName);
         Assertions.assertEquals(3, messages.size());
         Assertions.assertEquals(list, messages);
     }
