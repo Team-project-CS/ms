@@ -1,7 +1,7 @@
 package com.gp.q.controller;
 
 import com.gp.q.model.dto.QueueLogDto;
-import com.gp.q.model.dto.QueueMessagePeriodDto;
+import com.gp.q.model.dto.QueueLogPeriodDto;
 import com.gp.q.service.QueueService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class QueueHistoryController {
               "start": "2023-02-13T14:55:18.497007",
               "end": "2023-02-13T14:55:38.497007"
             }""")
-    ResponseEntity<List<QueueLogDto>> getMessagesByDate(@RequestBody QueueMessagePeriodDto dto) {
+    ResponseEntity<List<QueueLogDto>> getMessagesByDate(@RequestBody QueueLogPeriodDto dto) {
         return ResponseEntity.ok(queueService.getAllMessages(dto));
     }
 

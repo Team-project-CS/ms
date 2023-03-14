@@ -2,8 +2,8 @@ package com.gp.q.service.impl;
 
 import com.gp.q.model.QueueMessageDirection;
 import com.gp.q.model.dto.QueueLogDto;
+import com.gp.q.model.dto.QueueLogPeriodDto;
 import com.gp.q.model.dto.QueueMessageDto;
-import com.gp.q.model.dto.QueueMessagePeriodDto;
 import com.gp.q.model.entity.QueueLogEntity;
 import com.gp.q.model.entity.QueueMessageEntity;
 import com.gp.q.repository.MQBroker;
@@ -58,7 +58,7 @@ public class QueueServiceImpl implements QueueService {
     }
 
     @Override
-    public List<QueueLogDto> getAllMessages(QueueMessagePeriodDto dto) {
+    public List<QueueLogDto> getAllMessages(QueueLogPeriodDto dto) {
         return logRepository.findByCreationDateBetweenAndName(dto.getStartDate(), dto.getEndDate(), dto.getQueueName()).stream()
                 .map(t -> modelMapper.map(t, QueueLogDto.class)).toList();
     }

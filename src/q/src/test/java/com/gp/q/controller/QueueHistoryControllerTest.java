@@ -2,8 +2,8 @@ package com.gp.q.controller;
 
 import com.gp.q.model.QueueMessageDirection;
 import com.gp.q.model.dto.QueueLogDto;
+import com.gp.q.model.dto.QueueLogPeriodDto;
 import com.gp.q.model.dto.QueueMessageDto;
-import com.gp.q.model.dto.QueueMessagePeriodDto;
 import com.gp.q.model.dto.QueuePropertyDto;
 import com.gp.q.model.entity.QueueLogEntity;
 import com.gp.q.repository.QueueLogRepository;
@@ -124,7 +124,7 @@ class QueueHistoryControllerTest {
 
         repository.saveAll(list);
 
-        QueueMessagePeriodDto periodDto = new QueueMessagePeriodDto(queueName, current.minusMinutes(1), current);
+        QueueLogPeriodDto periodDto = new QueueLogPeriodDto(queueName, current.minusMinutes(1), current);
 
         ResponseEntity<List<QueueLogDto>> messagesByQueueName = historyController.getMessagesByDate(periodDto);
         Assertions.assertTrue(messagesByQueueName.getStatusCode().is2xxSuccessful());
