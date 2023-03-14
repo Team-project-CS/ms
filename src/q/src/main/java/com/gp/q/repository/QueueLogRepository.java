@@ -7,7 +7,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-public interface QueueCrudRepository extends JpaRepository<QueueMessageLogEntity, UUID> {
+/**
+ * Репозиторий для логирования взаимодействий с очередью
+ */
+public interface QueueLogRepository extends JpaRepository<QueueMessageLogEntity, UUID> {
 
     /**
      * Возвращает все сообщение когда-либо поступавшие в очередь

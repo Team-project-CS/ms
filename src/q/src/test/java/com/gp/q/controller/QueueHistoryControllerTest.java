@@ -6,7 +6,7 @@ import com.gp.q.model.dto.QueueMessageLogDto;
 import com.gp.q.model.dto.QueueMessagePeriodDto;
 import com.gp.q.model.dto.QueuePropertyDto;
 import com.gp.q.model.entity.QueueMessageLogEntity;
-import com.gp.q.repository.QueueCrudRepository;
+import com.gp.q.repository.QueueLogRepository;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -108,7 +108,7 @@ class QueueHistoryControllerTest {
     }
 
     @Autowired
-    private QueueCrudRepository repository;
+    private QueueLogRepository repository;
 
     @SuppressWarnings("ConstantConditions")
     @Test

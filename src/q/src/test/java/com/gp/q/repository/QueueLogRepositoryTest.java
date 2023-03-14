@@ -23,10 +23,10 @@ import java.util.List;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@ContextConfiguration(initializers = QueueCrudRepositoryTest.Initializer.class)
+@ContextConfiguration(initializers = QueueLogRepositoryTest.Initializer.class)
 @Testcontainers
 @TestMethodOrder(MethodOrderer.MethodName.class)
-class QueueCrudRepositoryTest {
+class QueueLogRepositoryTest {
 
     @SuppressWarnings("rawtypes")
     @Container
@@ -46,7 +46,7 @@ class QueueCrudRepositoryTest {
     }
 
     @Autowired
-    private QueueCrudRepository repository;
+    private QueueLogRepository repository;
 
     @Test
     @Order(1)

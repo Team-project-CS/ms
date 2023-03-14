@@ -21,17 +21,17 @@ import java.util.List;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@ContextConfiguration(initializers = QueueCrudRepositoryLogTest.Initializer.class)
+@ContextConfiguration(initializers = QueueLogRepositoryLogTest.Initializer.class)
 @Testcontainers
 @TestMethodOrder(MethodOrderer.MethodName.class)
-class QueueCrudRepositoryLogTest {
+class QueueLogRepositoryLogTest {
 
     @SuppressWarnings("rawtypes")
     @Container
     public static GenericContainer rabbit = new GenericContainer("rabbitmq:3-management")
             .withExposedPorts(5672, 15672);
     @Autowired
-    private QueueCrudRepository repository;
+    private QueueLogRepository repository;
 
     @Test
     @Order(1)

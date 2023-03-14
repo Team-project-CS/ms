@@ -1,18 +1,19 @@
-package com.gp.q.repository;
+package com.gp.q.repository.broker;
 
 import com.gp.q.exception.throwables.QueueServiceException;
 import com.gp.q.model.entity.QueueMessageEntity;
+import com.gp.q.repository.MQBroker;
 import lombok.SneakyThrows;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class QueueRepositoryRabbitMQ implements QueueRepository {
+public class BrokerRabbitMQ implements MQBroker {
 
     private final RabbitTemplate rabbitTemplate;
 
-    public QueueRepositoryRabbitMQ(RabbitTemplate rabbitTemplate) {
+    public BrokerRabbitMQ(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
     }
 
