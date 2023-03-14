@@ -32,14 +32,16 @@ public class QueueServiceImpl implements QueueService {
     public QueueMessageDto pushInQueue(QueueMessageDto dto) {
         QueueMessageEntity entity = modelMapper.map(dto, QueueMessageEntity.class);
         QueueMessageEntity saved = queueRepository.push(entity);
-        crudRepository.save(new QueueMessageLogEntity(entity.getName(), entity.getMessage(), entity.getCreationDate(), QueueMessageDirection.IN));
+        // Сохраняет в лог реальное время вставки, а не переданное извне
+        crudRepository.save(new QueueMessageLogEntity(entity.getName(), entity.getMessage(), LocalDateTime.now(), QueueMessageDirection.IN));
         return modelMapper.map(saved, QueueMessageDto.class);
     }
 
     @Override
     public QueueMessageDto popFromQueue(String queueName) {
         QueueMessageEntity entity = queueRepository.pop(queueName);
-        crudRepository.save(new QueueMessageLogEntity(entity.getName(), entity.getMessage(), entity.getCreationDate(), QueueMessageDirection.OUT));
+        // Сохраняет в лог реальное время чтения, а не переданное извне
+        crudRepository.save(new QueueMessageLogEntity(entity.getName(), entity.getMessage(), LocalDateTime.now(), QueueMessageDirection.OUT));
         return modelMapper.map(entity, QueueMessageDto.class);
     }
 
