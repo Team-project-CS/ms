@@ -12,6 +12,8 @@ import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import static java.time.temporal.ChronoField.MINUTE_OF_DAY;
+
 
 @Data
 @NoArgsConstructor
@@ -50,5 +52,24 @@ public class QueueMessageLogDto {
         this.message = message;
         this.direction = direction;
         this.creationDate = Objects.requireNonNullElseGet(creationDate, LocalDateTime::now);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        QueueMessageLogDto that = (QueueMessageLogDto) o;
+
+        if (!name.equals(that.name)) return false;
+        if (!message.equals(that.message)) return false;
+        if (direction != that.direction) return false;
+        if (!creationDate.toLocalDate().equals(that.creationDate.toLocalDate())) return false;
+        return creationDate.getLong(MINUTE_OF_DAY) == that.creationDate.getLong(MINUTE_OF_DAY);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, message, direction, creationDate);
     }
 }
