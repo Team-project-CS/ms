@@ -1,20 +1,22 @@
 package com.gp.api.service.impl;
 
+import com.gp.api.exception.throwables.EndpointHasDifferentMethodException;
 import com.gp.api.exception.throwables.EndpointNotFoundException;
 import com.gp.api.exception.throwables.MandatoryParameterNotSpecifiedException;
 import com.gp.api.exception.throwables.ParameterTypeMismatchException;
+import com.gp.api.mapper.EndpointMapper;
+import com.gp.api.mapper.ParamsMapper;
 import com.gp.api.model.dto.EndpointDto;
 import com.gp.api.model.dto.ParamDto;
 import com.gp.api.model.entity.EndpointEntity;
 import com.gp.api.model.entity.ParamEntity;
 import com.gp.api.model.pojo.Endpoint;
 import com.gp.api.model.pojo.Param;
+import com.gp.api.model.types.Method;
 import com.gp.api.repository.EndpointRepository;
 import com.gp.api.repository.ParamRepository;
 import com.gp.api.service.EndpointService;
 import com.gp.api.service.ResponseGenerator;
-import com.gp.api.service.mapper.EndpointMapper;
-import com.gp.api.service.mapper.ParamsMapper;
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.IterableUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,7 @@ public class EndpointServiceImpl implements EndpointService {
     private static final String PARAMETER_VALUE_DOES_NOT_MATCH_REGEX = "Body parameter %s value does not match regex [%s]";
     private static final String PARAMETER_VALUE_DOES_NOT_MATCH_FIXED = "Body parameter %s value does not match fixed value [%s]";
 
+    private static final String ENDPOINT_HAS_DIFFERENT_METHOD = "Endpoint's method is %s, got %s";
 
     @Autowired
     private EndpointRepository endpointRepository;
@@ -92,11 +95,20 @@ public class EndpointServiceImpl implements EndpointService {
                 .collect(Collectors.toSet());
     }
 
+    private static void checkEndpointMethod(Method targetMethod, EndpointEntity endpointEntity) throws EndpointHasDifferentMethodException {
+        if (!endpointEntity.getMethod().equals(targetMethod)) {
+            throw new EndpointHasDifferentMethodException(String.format(ENDPOINT_HAS_DIFFERENT_METHOD,
+                    endpointEntity.getMethod().getShortType(),
+                    targetMethod.getShortType()));
+        }
+    }
+
     @Override
     @SneakyThrows
-    public Map<String, ?> useEndpoint(UUID endpointId, Map<String, ?> body) {
+    public Map<String, ?> useEndpoint(UUID endpointId, Map<String, ?> body, Method targetMethod) {
         EndpointEntity endpointEntity = endpointRepository.findById(endpointId)
                 .orElseThrow(() -> new EndpointNotFoundException(ENDPOINT_WITH_SPECIFIED_ID_NOT_FOUND));
+        checkEndpointMethod(targetMethod, endpointEntity);
         Endpoint endpoint = endpointMapper.fromEntityToPojo(endpointEntity);
         checkBodyCompliance(body, endpoint.getBodyTemplate());
         return responseGenerator.generateResponse(endpoint.getResponseTemplate());

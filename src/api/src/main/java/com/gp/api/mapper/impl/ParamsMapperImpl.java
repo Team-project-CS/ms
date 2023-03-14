@@ -1,11 +1,11 @@
-package com.gp.api.service.mapper.impl;
+package com.gp.api.mapper.impl;
 
 import com.gp.api.exception.throwables.InvalidBodyTemplateException;
 import com.gp.api.exception.throwables.InvalidResponseTemplateException;
+import com.gp.api.mapper.ParamsMapper;
 import com.gp.api.model.dto.ParamDto;
 import com.gp.api.model.entity.ParamEntity;
 import com.gp.api.model.types.ParamType;
-import com.gp.api.service.mapper.ParamsMapper;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 
