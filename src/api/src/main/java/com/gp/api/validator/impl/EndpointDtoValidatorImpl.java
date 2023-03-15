@@ -18,17 +18,17 @@ public class EndpointDtoValidatorImpl implements EndpointDtoValidator {
     @Override
     @SneakyThrows
     public void validate(EndpointDto endpointDto) {
-        if (isTitleBLankOrEmpty(endpointDto.getTitle())) {
+        if (isTitleBLankNullOrEmpty(endpointDto.getTitle())) {
             throw new InvalidEndpointTitleException(ENDPOINT_TITLE_IS_BLANK_NULL_OR_EMPTY);
         }
         try {
             Method.getByShortType(endpointDto.getMethod().toLowerCase());
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
             throw new InvalidEndpointMethodException(ENDPOINT_METHOD_IS_INVALID);
         }
     }
 
-    private boolean isTitleBLankOrEmpty(String title) {
+    private boolean isTitleBLankNullOrEmpty(String title) {
         return StringUtils.isEmpty(title) || StringUtils.isBlank(title);
     }
 

@@ -13,6 +13,7 @@ import com.gp.api.service.EndpointService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.IterableUtils;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,12 @@ public class IntegrationTest extends BaseTest {
     private EndpointRepository endpointRepository;
     @Autowired
     private EndpointLogRepository endpointLogRepository;
+
+    @BeforeEach
+    void clearTables() {
+        endpointRepository.deleteAll();
+        endpointLogRepository.deleteAll();
+    }
 
     private static EndpointDto getNormalEndpointDto() {
         return EndpointDto.builder()
