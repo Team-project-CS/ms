@@ -24,34 +24,19 @@ public class RestExceptionHandler {
     public ResponseEntity<ApiError> defaultErrorHandler(HttpServletRequest req, Exception e) {
         log.error(ExceptionUtils.getStackTrace(e));
 
-        final ApiError.ApiErrorBuilder apiErrorBuilder = ApiError.builder()
+        ApiError apiError = ApiError.builder()
                 .timestamp(LocalDateTime.now())
-                .path(req.getContextPath() + req.getServletPath());
+                .path(req.getContextPath() + req.getServletPath())
+                .message(e.getMessage())
+                .build();
 
-        if (e.getClass().equals(QueueServiceException.class)) {
-            return new ResponseEntity<>(apiErrorBuilder.message(e.getMessage()).build(),
-                    ((QueueServiceException) e).getStatus());
+        if (e instanceof QueueServiceException ex) {
+            return new ResponseEntity<>(apiError, ex.getStatus());
         }
-
-        return new ResponseEntity<>(apiErrorBuilder.message(e.getMessage()).build(),
-                HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(value = {MethodArgumentNotValidException.class, MissingServletRequestParameterException.class})
-    public ResponseEntity<ApiError> methodArgumentNotValidExceptionHandler(HttpServletRequest req, Exception e) {
-        log.debug(ExceptionUtils.getStackTrace(e));
-
-        final ApiError.ApiErrorBuilder apiErrorBuilder = ApiError.builder()
-                .timestamp(LocalDateTime.now())
-                .path(req.getContextPath() + req.getServletPath());
-        if (e.getClass().equals(QueueServiceException.class)) {
-            return new ResponseEntity<>(apiErrorBuilder.message(e.getMessage()).build(),
-                    ((QueueServiceException) e).getStatus());
+        if (e instanceof MethodArgumentNotValidException || e instanceof MissingServletRequestParameterException) {
+            return new ResponseEntity<>(apiError, HttpStatus.NOT_ACCEPTABLE);
         }
-
-        return new ResponseEntity<>(apiErrorBuilder.message(e.getMessage()).build(),
-                HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
 }
 
