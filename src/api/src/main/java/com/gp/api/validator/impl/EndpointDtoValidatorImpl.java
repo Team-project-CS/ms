@@ -22,7 +22,7 @@ public class EndpointDtoValidatorImpl implements EndpointDtoValidator {
             throw new InvalidEndpointTitleException(ENDPOINT_TITLE_IS_BLANK_NULL_OR_EMPTY);
         }
         try {
-            Method.getByShortType(endpointDto.getMethod());
+            Method.getByShortType(endpointDto.getMethod().toLowerCase());
         } catch (IllegalArgumentException e) {
             throw new InvalidEndpointMethodException(ENDPOINT_METHOD_IS_INVALID);
         }

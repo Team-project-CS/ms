@@ -37,7 +37,7 @@ public class EndpointMapperImpl extends ModelMapper implements EndpointMapper {
     public EndpointEntity fromDtoToEntity(EndpointDto endpointDto) {
         endpointDtoValidator.validate(endpointDto);
         EndpointEntity endpointEntity = this.map(endpointDto, EndpointEntity.class);
-        endpointEntity.setMethod(Method.getByShortType(endpointDto.getMethod()));
+        endpointEntity.setMethod(Method.getByShortType(endpointDto.getMethod().toLowerCase()));
         return endpointEntity;
     }
 
