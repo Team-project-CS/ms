@@ -4,6 +4,7 @@ import com.gp.api.exception.throwables.EndpointHasDifferentMethodException;
 import com.gp.api.exception.throwables.EndpointNotFoundException;
 import com.gp.api.exception.throwables.MandatoryParameterNotSpecifiedException;
 import com.gp.api.exception.throwables.ParameterTypeMismatchException;
+import com.gp.api.log.EndpointLogService;
 import com.gp.api.mapper.EndpointMapper;
 import com.gp.api.mapper.ParamsMapper;
 import com.gp.api.model.dto.EndpointDto;
@@ -47,6 +48,8 @@ public class EndpointServiceImpl implements EndpointService {
     private EndpointMapper endpointMapper;
     @Autowired
     private ParamsMapper paramsMapper;
+    @Autowired
+    private EndpointLogService endpointLogService;
 
     private static Predicate<Param> bodyDoesNotContainsKey(Map<String, ?> body) {
         return param -> !body.containsKey(param.getKey());
@@ -111,7 +114,9 @@ public class EndpointServiceImpl implements EndpointService {
         checkEndpointMethod(targetMethod, endpointEntity);
         Endpoint endpoint = endpointMapper.fromEntityToPojo(endpointEntity);
         checkBodyCompliance(body, endpoint.getBodyTemplate());
-        return responseGenerator.generateResponse(endpoint.getResponseTemplate());
+        Map<String, ?> response = responseGenerator.generateResponse(endpoint.getResponseTemplate());
+        endpointLogService.createLogEvent(endpointId, body, response);
+        return response;
     }
 
     @Override

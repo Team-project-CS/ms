@@ -56,7 +56,7 @@ public class ApiController {
 
     @GetMapping("/{endpointId}")
     @ApiOperation("Get endpoint by id")
-    @ApiResponse(code = 400, message = "Specified endpoint is not found")
+    @ApiResponse(code = 404, message = "Specified endpoint is not found")
     public Endpoint getEndpoint(@PathVariable(name = "endpointId") UUID endpointID) {
         return endpointService.getEndpoint(endpointID);
     }
