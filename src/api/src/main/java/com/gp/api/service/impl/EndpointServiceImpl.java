@@ -18,9 +18,9 @@ import com.gp.api.repository.EndpointRepository;
 import com.gp.api.repository.ParamRepository;
 import com.gp.api.service.EndpointService;
 import com.gp.api.service.ResponseGenerator;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.IterableUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -28,6 +28,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class EndpointServiceImpl implements EndpointService {
 
     private static final String ENDPOINT_WITH_SPECIFIED_ID_NOT_FOUND = "Endpoint with specified ID not found";
@@ -35,21 +36,14 @@ public class EndpointServiceImpl implements EndpointService {
     private static final String PARAMETER_VALUE_IS_INVALID = "Body parameter %s value is invalid";
     private static final String PARAMETER_VALUE_DOES_NOT_MATCH_REGEX = "Body parameter %s value does not match regex [%s]";
     private static final String PARAMETER_VALUE_DOES_NOT_MATCH_FIXED = "Body parameter %s value does not match fixed value [%s]";
-
     private static final String ENDPOINT_HAS_DIFFERENT_METHOD = "Endpoint's method is %s, got %s";
 
-    @Autowired
-    private EndpointRepository endpointRepository;
-    @Autowired
-    private ParamRepository paramRepository;
-    @Autowired
-    private ResponseGenerator responseGenerator;
-    @Autowired
-    private EndpointMapper endpointMapper;
-    @Autowired
-    private ParamsMapper paramsMapper;
-    @Autowired
-    private EndpointLogService endpointLogService;
+    private final EndpointRepository endpointRepository;
+    private final ParamRepository paramRepository;
+    private final ResponseGenerator responseGenerator;
+    private final EndpointMapper endpointMapper;
+    private final ParamsMapper paramsMapper;
+    private final EndpointLogService endpointLogService;
 
     private static Predicate<Param> bodyDoesNotContainsKey(Map<String, ?> body) {
         return param -> !body.containsKey(param.getKey());

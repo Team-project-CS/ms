@@ -6,21 +6,18 @@ import com.gp.api.model.entity.EndpointEntity;
 import com.gp.api.model.pojo.Endpoint;
 import com.gp.api.model.types.Method;
 import com.gp.api.validator.EndpointDtoValidator;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
 @Component
+@RequiredArgsConstructor
 public class EndpointMapperImpl extends ModelMapper implements EndpointMapper {
-    private static final String ENDPOINT_METHOD_IS_INVALID = "Endpoint method is invalid";
 
-    private static final String ENDPOINT_TITLE_IS_BLANK_NULL_OR_EMPTY = "Endpoint title is null, blank or empty";
-
-    @Autowired
-    private EndpointDtoValidator endpointDtoValidator;
+    private final EndpointDtoValidator endpointDtoValidator;
 
     @PostConstruct
     void excludeTemplateMapping() {

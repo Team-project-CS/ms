@@ -8,9 +8,9 @@ import com.gp.api.repository.EndpointLogRepository;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,13 +20,11 @@ import java.util.UUID;
 @CrossOrigin
 @RequestMapping("/log")
 @Slf4j
+@RequiredArgsConstructor
 public class LogsController {
 
-    @Autowired
     private EndpointLogRepository endpointLogRepository;
-    @Autowired
     private EndpointLogService endpointLogService;
-    @Autowired
     private LocalDateTimeMapper localDateTimeMapper;
 
     @GetMapping("/{endpointId}")

@@ -13,7 +13,6 @@ import java.time.format.DateTimeParseException;
 public class LocalDateTimeMapperImpl implements LocalDateTimeMapper {
 
     private static final DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
     private static final String DATE_RANGE_IS_INVALID = "Date range must be either null or match yyyy-MM-dd HH:mm:ss";
 
     @Override
