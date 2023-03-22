@@ -16,5 +16,6 @@ public class EndpointDto {
     private String description;
     private Set<ParamDto> bodyTemplate;
     private Set<ParamDto> responseTemplate;
-    private String method;
+	private String method;
+	private String proceedLogic;
 }

@@ -35,6 +35,8 @@ public class EndpointEntity {
     @Enumerated(EnumType.STRING)
     private Method method;
 
+    private String proceedLogic;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
