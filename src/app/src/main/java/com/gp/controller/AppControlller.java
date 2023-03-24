@@ -36,4 +36,10 @@ public class AppControlller {
     String usersmsgqueues() {
         return "usersmsgqueues";
     }
+
+    @GetMapping("msg_history")
+    String msg_history() {
+        return "msg_history";
+    }
+
 }

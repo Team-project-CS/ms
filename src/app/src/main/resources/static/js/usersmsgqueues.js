@@ -23,7 +23,7 @@ function createTableFromJSON(json) {
     json.forEach(queue => {
         var row = document.createElement("tr");
         var nameField = document.createElement("td");
-        nameField.innerHTML = `<a href="msg_history.html?queue_name=${queue.queue_name}">${queue.queue_name}</a>`;
+        nameField.innerHTML = `<a href="msg_history?queue_name=${queue.queue_name}">${queue.queue_name}</a>`;
         row.appendChild(nameField);
         var pushUrlField = document.createElement("td");
         const pushUrl = `${apiUrl}/queue`;
