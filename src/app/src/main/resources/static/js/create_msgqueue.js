@@ -28,7 +28,7 @@ function sendQueue() {
 }
 
 function handleQueueCreation(json) {
-    alert(`Queue ${json.queue_name} was successfully created.`);
+    alert(`Queue ${json[0].queue_name} was successfully created.`);
     window.location.href = "usersmsgqueues";
     window.location.replace("usersmsgqueues");
 }

@@ -82,7 +82,7 @@ function createFieldDescription(field) {
 }
 
 function endpointIdOnClickHandle(id, idField) {
-    const copyText = apiUrl + "/use/" + id;
+    const copyText = `${apiUrl}/api/use/${id}`;
     navigator.clipboard.writeText(copyText);
     var tooltip = idField.querySelector("#myTooltip");
     tooltip.innerHTML = "Copied: " + copyText;
@@ -99,7 +99,7 @@ function deleteEndpoint(event) {
         return;
 
     const id = event.currentTarget.endpointId;
-    const url = `${apiUrl}/${id}`;
+    const url = `${apiUrl}/api/${id}`;
     var requestOptions = {
         method: 'DELETE',
         redirect: 'follow',
