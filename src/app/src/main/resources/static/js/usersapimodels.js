@@ -1,10 +1,12 @@
-const apiUrl = "http://178.21.11.9:8082/api";
+const location = window.location;
+const apiUrl = `${location.protocol}//${location.hostname}:${location.port}`;
+
 var idToTableRow = {};
 var table;
 
 window.onload = function () {
     table = document.getElementById("usersApiModelsTable");
-    getUsersApiModels(apiUrl, createTableFromJSON);
+    getUsersApiModels(`${apiUrl}/api`, createTableFromJSON);
 };
 
 function getUsersApiModels(url, handler) {
@@ -97,7 +99,7 @@ function deleteEndpoint(event) {
         return;
 
     const id = event.currentTarget.endpointId;
-    const url = apiUrl + '/' + id;
+    const url = `${apiUrl}/${id}`;
     var requestOptions = {
         method: 'DELETE',
         redirect: 'follow',

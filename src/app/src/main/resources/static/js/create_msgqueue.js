@@ -1,3 +1,6 @@
+const location = window.location;
+const apiUrl = `${location.protocol}//${location.hostname}:${location.port}`;
+
 function buildQueueCreationRequest() {
     var queueName = document.getElementById("queueName").value;
 
@@ -18,7 +21,7 @@ function sendQueue() {
         //mode: 'no-cors'
     };
 
-    fetch("http://178.21.11.9:8081/queue/list", requestOptions)
+    fetch(`${apiUrl}/queue/list`, requestOptions)
         .then(response => response.json())
         .then(handleQueueCreation)
         .catch(error => console.log('error', error));

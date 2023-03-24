@@ -1,3 +1,6 @@
+const location = window.location;
+const apiUrl = `${location.protocol}//${location.hostname}:${location.port}`;
+
 var fieldDescriptionTemplate =
     `
     <li>
@@ -210,7 +213,7 @@ function sendRestApiModel() {
         //mode: 'no-cors'
     };
 
-    fetch("http://178.21.11.9:8082/api", requestOptions)
+    fetch(`${apiUrl}/api`, requestOptions)
         .then(response => response.json())
         .then(handleRestApiModelCreation)
         .catch(error => console.log('error', error));

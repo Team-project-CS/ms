@@ -1,7 +1,7 @@
-const apiUrl = "http://178.21.11.9:8081/queue";
-const apiUrlList = apiUrl + "/list";
+const location = window.location;
+const apiUrl = `${location.protocol}//${location.hostname}:${location.port}`;
 
-getUsersQueues(apiUrlList, createTableFromJSON);
+getUsersQueues(`${apiUrl}/queue/list`, createTableFromJSON);
 
 function getUsersQueues(url, handler) {
     var requestOptions = {

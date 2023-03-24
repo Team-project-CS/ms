@@ -1,8 +1,9 @@
-const apiUrl = "http://178.21.11.9:8081/queue/history";
+const location = window.location;
+const apiUrl = `${location.protocol}//${location.hostname}:${location.port}`;
+
 const queueName = getParameterByName('queue_name');
 console.log(queueName);
-getMessagesHistory(
-    apiUrl + '/' + queueName,
+getMessagesHistory(`${apiUrl}/queue/history/${queueName}`,
     getMessagesHistoryHandler);
 
 // source: https://stackoverflow.com/questions/53757395/how-to-pass-variable-on-href
