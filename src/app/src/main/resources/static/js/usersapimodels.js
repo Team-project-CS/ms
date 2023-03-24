@@ -1,4 +1,5 @@
-const apiUrl = `${location.protocol}//${location.hostname}:${location.port}`;
+const port = 8082;
+const apiUrl = `${location.protocol}//${location.hostname}:${port}`;
 
 var idToTableRow = {};
 var table;

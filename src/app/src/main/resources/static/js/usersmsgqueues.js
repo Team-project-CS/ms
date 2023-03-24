@@ -1,4 +1,5 @@
-const apiUrl = `${location.protocol}//${location.hostname}:${location.port}`;
+const port = 8081;
+const apiUrl = `${location.protocol}//${location.hostname}:${port}`;
 
 getUsersQueues(`${apiUrl}/queue/list`, createTableFromJSON);
 

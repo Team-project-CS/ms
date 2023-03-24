@@ -1,4 +1,5 @@
-const apiUrl = `${location.protocol}//${location.hostname}:${location.port}`;
+const port = 8081;
+const apiUrl = `${location.protocol}//${location.hostname}:${port}`;
 
 const queueName = getParameterByName('queue_name');
 console.log(queueName);
