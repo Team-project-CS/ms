@@ -1,4 +1,3 @@
-const location = window.location;
 const apiUrl = `${location.protocol}//${location.hostname}:${location.port}`;
 
 getUsersQueues(`${apiUrl}/queue/list`, createTableFromJSON);
