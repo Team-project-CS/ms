@@ -220,6 +220,6 @@ function handleRestApiModelCreation(json) {
     console.log(json);
     alert(`Endpoint with id ${json.id} was successfully created.`);
 
-    window.location.href = "usersapimodels.html";
-    window.location.replace("usersapimodels.html");
+    window.location.href = "usersapimodels";
+    window.location.replace("usersapimodels");
 }
