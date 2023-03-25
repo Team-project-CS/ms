@@ -24,6 +24,16 @@
             <artifactId>regexp-gen</artifactId>
             <version>${regexp-gen.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.luaj</groupId>
+            <artifactId>luaj-jse</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20090211</version>
+        </dependency>
     </dependencies>
 
     <build>

@@ -18,6 +18,7 @@ import com.gp.api.repository.EndpointRepository;
 import com.gp.api.repository.ParamRepository;
 import com.gp.api.service.EndpointService;
 import com.gp.api.service.ResponseGenerator;
+import com.gp.api.service.ResponseInterpreter;
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.IterableUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,8 @@ public class EndpointServiceImpl implements EndpointService {
     private ParamRepository paramRepository;
     @Autowired
     private ResponseGenerator responseGenerator;
+    @Autowired
+    private ResponseInterpreter responseInterpreter;
     @Autowired
     private EndpointMapper endpointMapper;
     @Autowired
@@ -114,9 +117,14 @@ public class EndpointServiceImpl implements EndpointService {
         checkEndpointMethod(targetMethod, endpointEntity);
         Endpoint endpoint = endpointMapper.fromEntityToPojo(endpointEntity);
         checkBodyCompliance(body, endpoint.getBodyTemplate());
-        Map<String, ?> response = responseGenerator.generateResponse(endpoint.getResponseTemplate());
+		Map<String, ?> response;
+        if (endpoint.getProceedLogic() == null)
+			response = responseGenerator.generateResponse(endpoint.getResponseTemplate());
+		else
+			response = responseInterpreter.generateResponse(body, endpoint.getProceedLogic());
+		
         endpointLogService.createLogEvent(endpointId, body, response);
-        return response;
+        return response;    
     }
 
     @Override

@@ -13,5 +13,6 @@ public class Endpoint {
     private Set<Param> bodyTemplate;
     private Set<Param> responseTemplate;
     private String description;
-    private Method method;
+	private Method method;
+	private String proceedLogic;
 }
