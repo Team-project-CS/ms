@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+
+    <title>Message Queues</title>
+    <link rel="stylesheet" th:href="@{/css/usersapimodels.css}"/>
+    <script th:src="@{/js/usersmsgqueues.js}" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+<h1>User's Message Queues</h1>
+<a href="create_msgqueue">Create Message Queue</a>
+<div id="usersMsgQueuesDiv">
+    <table bgcolor="silver" border="1" cellpadding="5" cellspacing="2" id="usersMsgQueuesTable">
+        <tr>
+            <td><b>Message Queue Name</b></td>
+            <td><b>Push Url (method: POST)</b></td>
+            <td><b>Pull Url (method: GET)</b></td>
+            <td><b>Push Body Structure</b></td>
+        </tr>
+    </table>
+</div>
+
+</body>
+
+</html>

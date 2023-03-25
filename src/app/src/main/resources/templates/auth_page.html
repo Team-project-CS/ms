@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Auth Page</title>
+    <link href="../static/css/auth_page.css" media="screen" rel="stylesheet" type="text/css"/>
+    <link href="http://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+</head>
+
+<body>
+
+<!-- vladmaxi top bar -->
+<div class="vladmaxi-top">
+    <!-- buttons
+    <a href="http://vladmaxi.net" target="_blank">Главная Vladmaxi.net</a>
+    <span class="right">
+    <a href="http://vladmaxi.net/web-developer/css/22-luchshix-formy-vxoda-i-registracii-na-sajte-v-html-css.html">
+            <strong>Вернуться назад к статье</strong>
+        </a>
+    </span>
+    -->
+    <div class="clr"></div>
+</div>
+<!--/ vladmaxi top bar -->
+
+<div id="login">
+    <h2><span class="fontawesome-lock"></span>Авторизация</h2>
+    <form action="javascript:void(0);" method="POST">
+        <fieldset>
+            <p><label for="email">Логин или Email:</label></p>
+            <p><input id="email" onBlur="if(this.value=='')this.value='логин'" onFocus="if(this.value=='Логин')this.value=''" type="email"
+                      value="Логин"></p>
+
+            <p><label for="password">Пароль:</label></p>
+            <p><input id="password" onBlur="if(this.value=='')this.value='Пароль'" onFocus="if(this.value=='Пароль')this.value=''" type="password"
+                      value="Пароль"></p>
+
+            <p><input type="submit" value="ВОЙТИ"></p>
+        </fieldset>
+    </form>
+</div>
+</body>
+</html>
