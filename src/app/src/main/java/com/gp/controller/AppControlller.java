@@ -42,4 +42,9 @@ public class AppControlller {
         return "msg_history";
     }
 
+    @GetMapping("restapi_history")
+    String restapi_history() {
+        return "requests_history";
+    }
+
 }
