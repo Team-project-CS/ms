@@ -78,6 +78,27 @@ var requestBodyTemplate = function (requestName) {
     `;
 }
 
+window.onload = function() {
+    document.getElementById('button').addEventListener("click", function() {
+		document.querySelector('.bg-modal').style.display = "flex";
+		
+		document.querySelector('.modal-contents').innerHTML = 
+		`<div id="editor">local ${getLuaInputArguments(0)} = ...
+</div>
+		
+		<div class="close">+</div>`;
+		
+		document.querySelector('.close').addEventListener("click", function() {
+			document.querySelector('.bg-modal').style.display = "none";
+			document.querySelector('.modal-contents').innerHTML = "";
+		});
+		
+		var editor = ace.edit("editor");
+		editor.setTheme("ace/theme/monokai");
+		editor.session.setMode("ace/mode/lua");
+	});
+};
+
 var requests = [];
 var fieldTypeTransformMap = {
     string: "str",
@@ -184,6 +205,12 @@ function createEndpoint(index) {
         const value = field.querySelector("#fieldValueInputField").value.trim();
         result.responseTemplate.push({key: key, type: type, value: value});
     });
+	
+	const customLogic = getCustomLogic();
+    if (customLogic != "") 
+    {
+        result["proceedLogic"] = customLogic;
+    }
 
     console.log(JSON.stringify(result));
 
@@ -225,4 +252,28 @@ function handleRestApiModelCreation(json) {
 
     window.location.href = "usersapimodels";
     window.location.replace("usersapimodels");
+}
+
+function getLuaInputArguments(index) 
+{
+    const req = requests.at(index)
+    params = [];
+    req.fields.forEach(field => {
+        const key = field.querySelector("#fieldNameInputField").value.trim();
+        params.push(key);
+    });
+
+    return params.join(", ");
+}
+
+function getCustomLogic() 
+{
+    var editorDOM = document.getElementById("editor");
+    if (editorDOM) 
+    {
+        var editor = ace.edit("editor");
+        return editor.getValue();
+    }
+
+    return "";
 }
