@@ -25,10 +25,11 @@ function getUsersApiModels(url, handler) {
 function createTableFromJSON(json) {
     console.log(json);
 
+    const historyUrl = `${location.protocol}//${location.hostname}:${8080}/restapi_history`;
     json.forEach(endpoint => {
         var row = document.createElement("tr");
         var nameField = document.createElement("td");
-        nameField.innerHTML = endpoint.title;
+        nameField.innerHTML = `<a href="${historyUrl}?endpointId=${endpoint.id}">${endpoint.title}</a>`;
         row.appendChild(nameField);
         var methodField = document.createElement("td");
         methodField.innerHTML = endpoint.method.toUpperCase();
