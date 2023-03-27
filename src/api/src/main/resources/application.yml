@@ -18,3 +18,8 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   application:
     name: api
+
+springfox:
+  documentation:
+    swagger-ui:
+      base-url: api
