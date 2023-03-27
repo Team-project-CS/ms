@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8082
 spring:
   mvc:
     pathmatch:
@@ -20,4 +20,4 @@ spring:
 springfox:
   documentation:
     swagger-ui:
-      base-url: api
+      base-url: api-docs
