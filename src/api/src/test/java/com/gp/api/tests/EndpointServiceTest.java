@@ -34,7 +34,6 @@ public class EndpointServiceTest extends BaseTest {
 
     @Autowired
     private EndpointService endpointService;
-
     @Autowired
     private EndpointRepository endpointRepository;
 

@@ -6,8 +6,8 @@ import com.gp.api.mapper.EndpointLogMapper;
 import com.gp.api.model.entity.EndpointLogEntity;
 import com.gp.api.model.pojo.EndpointLog;
 import com.gp.api.repository.EndpointLogRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,14 +16,13 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class EndpointLogServiceImpl implements EndpointLogService {
 
     private static final String END_DATE_IS_LESS_THAN_START_DATE = "Date range is invalid: end date cannot be less than start date";
 
-    @Autowired
-    private EndpointLogRepository endpointLogRepository;
-    @Autowired
-    private EndpointLogMapper endpointLogMapper;
+    private final EndpointLogRepository endpointLogRepository;
+    private final EndpointLogMapper endpointLogMapper;
 
     private static boolean onlyEndDateIsSet(LocalDateTime end) {
         return end != null;
