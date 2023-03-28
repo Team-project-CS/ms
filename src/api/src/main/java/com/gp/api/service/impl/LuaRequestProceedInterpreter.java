@@ -1,17 +1,18 @@
 package com.gp.api.service.impl;
 
 import com.gp.api.exception.RequestInterpreterException;
-import com.gp.api.model.pojo.Param;
 import com.gp.api.service.RequestProceedInterpreter;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.luaj.vm2.*;
-import org.luaj.vm2.lib.jse.*;
+import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.Varargs;
+import org.luaj.vm2.lib.jse.JsePlatform;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-public class LuaRequestProceedInterpreter implements RequestProceedInterpreter
-{
+public class LuaRequestProceedInterpreter implements RequestProceedInterpreter {
     @Override
     public Map<String, Object> execute(final Map<String, ?> requestField, String script)
             throws RequestInterpreterException {
@@ -26,8 +27,7 @@ public class LuaRequestProceedInterpreter implements RequestProceedInterpreter
         return null;
     }
 
-    private LuaValue[] getCallArguments(final Map<String, ?> request, String script)
-    {
+    private LuaValue[] getCallArguments(final Map<String, ?> request, String script) {
         ArrayList<String> fields = new ArrayList<>();
         String[] parts = script.split("\\.\\.\\.");
         String[] params = parts[0].replaceAll("local", "").replaceAll("=", "").split(",");

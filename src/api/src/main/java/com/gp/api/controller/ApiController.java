@@ -8,8 +8,8 @@ import com.gp.api.service.EndpointService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,10 +20,10 @@ import java.util.UUID;
 @CrossOrigin
 @RequestMapping("/api")
 @Slf4j
+@RequiredArgsConstructor
 public class ApiController {
 
-    @Autowired
-    private EndpointService endpointService;
+    private final EndpointService endpointService;
 
     @PostMapping
     @ApiOperation("Create endpoint")
