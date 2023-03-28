@@ -21,3 +21,8 @@ springfox:
   documentation:
     swagger-ui:
       base-url: queue-docs
+  springfox:
+    documentation:
+      swagger:
+        v2:
+          path: /queue-docs
