@@ -22,3 +22,8 @@ spring:
   rabbitmq:
     host: ${RABBIT_HOST}
     port: ${RABBIT_PORT}
+
+springfox:
+  documentation:
+    swagger-ui:
+      base-url: queue-docs
