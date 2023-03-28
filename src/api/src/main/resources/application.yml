@@ -23,8 +23,6 @@ springfox:
   documentation:
     swagger-ui:
       base-url: api-docs
-  springfox:
-    documentation:
-      swagger:
-        v2:
-          path: /api-docs
+    swagger:
+      v2:
+        path: api-docs
