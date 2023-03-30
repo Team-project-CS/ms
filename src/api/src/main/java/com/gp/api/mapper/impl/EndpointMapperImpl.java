@@ -16,6 +16,9 @@ import javax.annotation.PostConstruct;
 @Component
 @RequiredArgsConstructor
 public class EndpointMapperImpl extends ModelMapper implements EndpointMapper {
+    private static final String ENDPOINT_METHOD_IS_INVALID = "Endpoint method is invalid";
+
+    private static final String ENDPOINT_TITLE_IS_BLANK_NULL_OR_EMPTY = "Endpoint title is null, blank or empty";
 
     private final EndpointDtoValidator endpointDtoValidator;
 

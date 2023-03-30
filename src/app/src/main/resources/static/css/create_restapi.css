@@ -1,0 +1,164 @@
+.treeview { padding: 0; clear: both; font-family: Arial, sans-serif; width: 100%; }
+    .treeview * { font-size: 100.1%; }
+    .treeview ul
+    {
+        overflow: hidden; width: 100%; margin: 0; padding: 0 0 1.5em 0;
+        list-style-type: none;
+    }
+    .treeview ul ul { overflow: visible; width: auto; height: auto; margin: 0 0 0 0; padding: 0 0 0 0.75em; }
+    /* класс для ul после которых нет li в родительских ветках */
+    .treeview ul.l { border-left: 1px solid; margin-left: -1px; }
+    .treeview li.cl ul { display: none; }
+    .treeview li { margin: 0; padding: 0; }
+    .treeview li li { margin: 0 0 0 0.5em; border-left: 1px dotted; padding: 0; }
+    .treeview li div { position: relative; height: 1.5em; min-height: 16px; height: 1.3em; }
+    .treeview li li div { border-bottom: 1px dotted; }
+    .treeview li p
+    {
+        position: absolute; z-index: 1; top: 0.8em; top: 0.65em; left: 1.75em;
+        width: 100%; margin: 0; border-bottom: 1px dashed; padding: 0;
+    }
+    .treeview a { padding: 0.1em 0.2em; white-space: nowrap; height: 1px; }
+    .treeview img.i
+    {
+        border-right: 2px solid; border-bottom: 0.5em solid;
+        margin-bottom: -0.5em; vertical-align: middle;
+    }
+    .treeview a.sc
+    {
+        position: absolute; top: 0.06em;
+        margin-left: -1em; padding: 0; text-decoration: none;
+    }
+
+    /* colors */
+    .treeview li p,
+    .treeview img.i,
+    .treeview .sc
+    { background: #ffffff; }
+    .treeview ul.l,
+    .treeview li p,
+    .treeview img.i
+    { border-color: #f5f5ea; }
+    .treeview ul li li,
+    .treeview ul li li div
+    { border-color: #999999; }
+    .treeview a,
+    .treeview a.sc,
+    .treeview a.sc:hover
+    { color: #000000; }
+    .treeview a:hover
+    { color: #cc0000; }
+	
+$blue: #1686d9;
+
+h1, h3 {
+	color: white;
+	font-weight: 400;
+}
+
+header {
+	display: flex;
+	padding: 0 15px;
+	max-width: 800px;
+	margin: 0 auto;
+	justify-content: space-between;
+	align-items: center;
+	img {
+		width: 30px;
+	}
+}
+
+ul {
+	list-style: none;
+}
+
+li {
+	display: inline;
+	padding: 6px;
+	a {
+		text-decoration: none;
+		color: black;
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+}
+
+.hero {
+	background-image: url("http://richardmiddleton.me/modal-hero.jpg");
+	background-size: cover;
+	height: 420px;
+	width: 100%;
+	text-align: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.button {
+	background-color: $blue;
+	border: 2px solid white;
+	border-radius: 30px;
+	text-decoration: none;
+	padding: 10px 28px;
+	color: white;
+	margin-top: 10px;
+	display: inline-block;
+	&:hover {
+		background-color: white;
+		color: $blue;
+		border: 2px solid $blue;
+	}
+}
+
+.card-container {
+	max-width: 800px;
+	margin: 50px auto;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.card {
+	height: 300px;
+	width: 230px;
+	border: 1px solid darkgray;
+	border-radius: 3px;
+	margin: 10px;
+}
+
+// MODAL STARTS HERE //
+
+.bg-modal {
+	background-color: rgba(0, 0, 0, 0.8);
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	display: none;
+	justify-content: center;
+	align-items: center;
+}
+
+.modal-contents {
+	height: 300px;
+	width: 500px;
+	background-color: white;
+	text-align: center;
+	padding: 20px;
+	position: relative;
+	border-radius: 4px;
+}
+
+.close {
+	position: absolute;
+	top: 0;
+	right: 10px;
+	font-size: 42px;
+	color: #c5c5c5;
+	transform: rotate(45deg);
+	cursor: pointer;
+	&:hover {
+		color: #c5c5c5;
+	}
+}

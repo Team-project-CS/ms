@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+
+    <title>Create Rest API Model</title>
+    <link rel="stylesheet" th:href="@{/css/create_restapi.css}"/>
+	<style type="text/css" media="screen">
+    #editor { 
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+	</style>
+    <script th:src="@{/js/create_restapi.js}" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.5/ace.js" type="text/javascript" charset="utf-8"></script>
+
+<h1>Rest API Model Creation</h1>
+<input id="requestNameInputField" placeholder="Model name"></input>
+<button onclick=addRequest()>Add Request</button>
+
+<div class="treeview">
+    <ul>
+        <li>
+            <div><p><a class="sc" href="#" onclick="return UnHide(this)">&#9660;</a>
+                <a>Requests</a></p></div>
+            <ul id="requestsList">
+                <!-- Tree body (var requestBodyTemplate) -->
+            </ul>
+        </li>
+    </ul>
+</div>
+
+<button onclick=sendRestApiModel()>Create Api Model</button>
+
+<button id="button">Custom logic</button>
+
+<div class="bg-modal">
+	<div class="modal-contents">
+		
+	</div>
+</div>
+
+</body>
+
+</html>

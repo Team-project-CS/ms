@@ -1,13 +1,16 @@
 server:
-  port: 8082
+  port: 8080
+
 spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
   datasource:
-    url: jdbc:postgresql://localhost/postgres
+    url: jdbc:h2:file:~/test
     username: postgres
-    password: 1
+    password: postgres
+    driverClassName: org.h2.Driver
+  #    embedded-database-connection:
 
   jpa:
     generate-ddl: true
@@ -16,11 +19,3 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-
-springfox:
-  documentation:
-    swagger-ui:
-      base-url: api-docs
-    swagger:
-      v2:
-        path: api-docs

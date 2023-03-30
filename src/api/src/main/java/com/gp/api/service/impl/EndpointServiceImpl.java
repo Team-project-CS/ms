@@ -18,6 +18,7 @@ import com.gp.api.repository.EndpointRepository;
 import com.gp.api.repository.ParamRepository;
 import com.gp.api.service.EndpointService;
 import com.gp.api.service.ResponseGenerator;
+import com.gp.api.service.ResponseInterpreter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.collections4.IterableUtils;
@@ -36,11 +37,13 @@ public class EndpointServiceImpl implements EndpointService {
     private static final String PARAMETER_VALUE_IS_INVALID = "Body parameter %s value is invalid";
     private static final String PARAMETER_VALUE_DOES_NOT_MATCH_REGEX = "Body parameter %s value does not match regex [%s]";
     private static final String PARAMETER_VALUE_DOES_NOT_MATCH_FIXED = "Body parameter %s value does not match fixed value [%s]";
+
     private static final String ENDPOINT_HAS_DIFFERENT_METHOD = "Endpoint's method is %s, got %s";
 
     private final EndpointRepository endpointRepository;
     private final ParamRepository paramRepository;
     private final ResponseGenerator responseGenerator;
+    private final ResponseInterpreter responseInterpreter;
     private final EndpointMapper endpointMapper;
     private final ParamsMapper paramsMapper;
     private final EndpointLogService endpointLogService;
@@ -108,9 +111,14 @@ public class EndpointServiceImpl implements EndpointService {
         checkEndpointMethod(targetMethod, endpointEntity);
         Endpoint endpoint = endpointMapper.fromEntityToPojo(endpointEntity);
         checkBodyCompliance(body, endpoint.getBodyTemplate());
-        Map<String, ?> response = responseGenerator.generateResponse(endpoint.getResponseTemplate());
+		Map<String, ?> response;
+        if (endpoint.getProceedLogic() == null)
+			response = responseGenerator.generateResponse(endpoint.getResponseTemplate());
+		else
+			response = responseInterpreter.generateResponse(body, endpoint.getProceedLogic());
+		
         endpointLogService.createLogEvent(endpointId, body, response);
-        return response;
+        return response;    
     }
 
     @Override

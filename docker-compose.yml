@@ -23,6 +23,21 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
 
+  app:
+    image: ms/app:1
+    networks:
+      web:
+        aliases:
+          - app
+    ports:
+      - "8080:8080"
+    links:
+      - api
+      - q
+    depends_on:
+      - api
+      - q
+
   api:
     image: ms/api:1
     environment:

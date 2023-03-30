@@ -23,9 +23,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class LogsController {
 
-    private EndpointLogRepository endpointLogRepository;
-    private EndpointLogService endpointLogService;
-    private LocalDateTimeMapper localDateTimeMapper;
+    private final EndpointLogRepository endpointLogRepository;
+    private final EndpointLogService endpointLogService;
+    private final LocalDateTimeMapper localDateTimeMapper;
 
     @GetMapping("/{endpointId}")
     @ApiOperation(value = "Get endpoint's logs by id.",
