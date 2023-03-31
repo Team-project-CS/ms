@@ -1,12 +1,15 @@
+server:
+  port: 8082
 spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
 
+  flyway:
+    enabled: false
   jpa:
-    generate-ddl: true
+    show_sql: true
     hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+      ddl-auto: none
+      use_sql_comments: true
+      format_sql: true

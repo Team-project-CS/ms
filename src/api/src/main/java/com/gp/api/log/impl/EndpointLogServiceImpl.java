@@ -24,18 +24,6 @@ public class EndpointLogServiceImpl implements EndpointLogService {
     private final EndpointLogRepository endpointLogRepository;
     private final EndpointLogMapper endpointLogMapper;
 
-    private static boolean onlyEndDateIsSet(LocalDateTime end) {
-        return end != null;
-    }
-
-    private static boolean allDatesAreSet(LocalDateTime start, LocalDateTime end) {
-        return end != null && start != null;
-    }
-
-    private static boolean noDateIsSet(LocalDateTime start, LocalDateTime end) {
-        return start == null && end == null;
-    }
-
     @Override
     public void createLogEvent(UUID endpointId, Map<String, ?> input, Map<String, ?> output) {
         endpointLogRepository.save(new EndpointLogEntity(endpointId,
@@ -44,21 +32,37 @@ public class EndpointLogServiceImpl implements EndpointLogService {
     }
 
     @Override
-    @SneakyThrows
     public List<EndpointLog> getLogsInDateRange(UUID endpointId, LocalDateTime start, LocalDateTime end) {
+        return map(getLogsEntitiesInDateRange(endpointId, start, end));
+    }
+
+    @SneakyThrows
+    private List<EndpointLogEntity> getLogsEntitiesInDateRange(UUID endpointId, LocalDateTime start, LocalDateTime end) {
         if (noDateIsSet(start, end)) {
-            return map(getAllLogs(endpointId));
+            return getAllLogs(endpointId);
         }
         if (allDatesAreSet(start, end)) {
             if (end.isBefore(start)) {
                 throw new InvalidDateRangeException(END_DATE_IS_LESS_THAN_START_DATE);
             }
-            return map(getLogsInRange(endpointId, start, end));
+            return getLogsInRange(endpointId, start, end);
         }
         if (onlyEndDateIsSet(end)) {
-            return map(getLogsBeforeEndDate(endpointId, end));
+            return getLogsBeforeEndDate(endpointId, end);
         }
-        return map(getLogsAfterStartDate(endpointId, start));
+        return getLogsAfterStartDate(endpointId, start);
+    }
+
+    private boolean onlyEndDateIsSet(LocalDateTime end) {
+        return end != null;
+    }
+
+    private boolean allDatesAreSet(LocalDateTime start, LocalDateTime end) {
+        return end != null && start != null;
+    }
+
+    private boolean noDateIsSet(LocalDateTime start, LocalDateTime end) {
+        return start == null && end == null;
     }
 
     private List<EndpointLogEntity> getLogsAfterStartDate(UUID endpointId, LocalDateTime start) {

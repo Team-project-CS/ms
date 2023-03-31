@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "endoint")
+@Table(name = "endoint", schema = "mock")
 @Getter
 @Setter
 @ToString
@@ -23,18 +23,22 @@ import java.util.UUID;
 public class EndpointEntity {
     @Id
     @GeneratedValue
+    @Column(name = "id")
     private UUID id;
     @NotNull
+    @Column(name = "title")
     private String title;
     @OneToMany(mappedBy = "bodyEndpointEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<ParamEntity> bodyTemplate = new HashSet<>();
     @OneToMany(mappedBy = "responseEndpointEntity", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<ParamEntity> responseTemplate = new HashSet<>();
+    @Column(name = "description")
     private String description;
     @NotNull
     @Enumerated(EnumType.STRING)
+    @Column(name = "method")
     private Method method;
-
+    @Column(name = "proceed_logic")
     private String proceedLogic;
 
     @Override

@@ -8,11 +8,16 @@ spring:
     url: jdbc:postgresql://localhost/postgres
     username: postgres
     password: 1
+  flyway:
+    url: jdbc:postgresql://localhost/postgres
+    user: postgres
+    password: 1
+    schemas: flyway
+    #enabled: false
 
   jpa:
-    generate-ddl: true
     hibernate:
-      ddl-auto: create
+    #ddl-auto: create
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect

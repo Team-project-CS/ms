@@ -1,18 +1,15 @@
 package com.gp.api.tests;
 
-import com.gp.api.BaseTest;
-import com.gp.api.BaseTestConfig;
 import com.gp.api.exception.throwables.InvalidDateRangeException;
 import com.gp.api.log.EndpointLogService;
 import com.gp.api.model.pojo.EndpointLog;
 import com.gp.api.repository.EndpointLogRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.IterableUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,9 +18,8 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringJUnitConfig({BaseTestConfig.class})
-@Slf4j
-public class EndpointLogServiceTest extends BaseTest {
+@SpringBootTest
+public class EndpointLogServiceTest {
 
     @Autowired
     private EndpointLogService endpointLogService;
