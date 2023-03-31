@@ -16,7 +16,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@Table(name = "endpoint_log")
+@Table(name = "endpoint_log", schema = "mock")
 @Getter
 @Setter
 @ToString
@@ -24,22 +24,27 @@ import java.util.UUID;
 public class EndpointLogEntity {
     @Id
     @GeneratedValue
+    @Column(name = "id")
     private UUID id;
     @NotNull
+    @Column(name = "endpoint_id")
     private UUID endpointId;
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "endpoint_log_input_mapping",
-            joinColumns = {@JoinColumn(name = "log_id", referencedColumnName = "id")})
+            joinColumns = {@JoinColumn(name = "log_id", referencedColumnName = "id")},
+            schema = "mock")
     @MapKeyColumn(name = "input_field_name")
     @Column(name = "input_field_value")
     private Map<String, String> input = new HashMap<>();
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "endpoint_log_output_mapping",
-            joinColumns = {@JoinColumn(name = "log_id", referencedColumnName = "id")})
+            joinColumns = {@JoinColumn(name = "log_id", referencedColumnName = "id")},
+            schema = "mock")
     @MapKeyColumn(name = "output_field_name")
     @Column(name = "output_field_value")
     private Map<String, String> output = new HashMap<>();
     @CreationTimestamp
+    @Column(name = "creation_date")
     private LocalDateTime creationDate;
 
     public EndpointLogEntity(UUID endpointId, Map<String, String> input, Map<String, String> output) {

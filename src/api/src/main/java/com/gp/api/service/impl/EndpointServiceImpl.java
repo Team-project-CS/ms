@@ -151,14 +151,14 @@ public class EndpointServiceImpl implements EndpointService {
                 }
                 break;
             case REGEX:
-                boolean isValueMatched = value.matches(param.getValue());
-                if (!isValueMatched) {
+                boolean isRegexValueMatched = value.matches(param.getValue());
+                if (!isRegexValueMatched) {
                     throw new ParameterTypeMismatchException(String.format(PARAMETER_VALUE_DOES_NOT_MATCH_REGEX, param.getKey(), param.getValue()));
                 }
                 break;
             case FIXED:
-                boolean valueDoesNotEquals = !value.equals(param.getValue());
-                if (valueDoesNotEquals) {
+                boolean fixedValueDoesNotEquals = !value.equals(param.getValue());
+                if (fixedValueDoesNotEquals) {
                     throw new ParameterTypeMismatchException(String.format(PARAMETER_VALUE_DOES_NOT_MATCH_FIXED, param.getKey(), param.getValue()));
                 }
             default:

@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@Table(name = "param")
+@Table(name = "param", schema = "mock")
 @Getter
 @Setter
 @ToString
@@ -20,18 +20,20 @@ import java.util.UUID;
 public class ParamEntity {
     @Id
     @GeneratedValue
+    @Column(name = "id")
     private UUID id;
+    @Column(name = "key")
     private String key;
+    @Column(name = "value")
     private String value;
     @Enumerated(EnumType.STRING)
+    @Column(name = "type")
     private ParamType type;
-
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "body_endpoint_id")
     @ToString.Exclude
     private EndpointEntity bodyEndpointEntity;
-
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "response_endpoint_id")

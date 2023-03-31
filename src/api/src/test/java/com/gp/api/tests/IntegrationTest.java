@@ -1,7 +1,5 @@
 package com.gp.api.tests;
 
-import com.gp.api.BaseTest;
-import com.gp.api.BaseTestConfig;
 import com.gp.api.log.EndpointLogService;
 import com.gp.api.model.dto.EndpointDto;
 import com.gp.api.model.dto.ParamDto;
@@ -17,7 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -27,9 +25,9 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringJUnitConfig({BaseTestConfig.class})
+@SpringBootTest
 @Slf4j
-public class IntegrationTest extends BaseTest {
+public class IntegrationTest {
 
     @Autowired
     private EndpointService endpointService;
