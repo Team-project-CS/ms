@@ -1,0 +1,26 @@
+server:
+  port: 8081
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  datasource:
+    url: jdbc:postgresql://localhost/postgres
+    username: postgres
+    password: 1
+
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+springfox:
+  documentation:
+    swagger-ui:
+      base-url: queue-docs
+    swagger:
+      v2:
+        path: queue-docs

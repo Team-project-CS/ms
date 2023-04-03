@@ -1,0 +1,21 @@
+server:
+  port: 8080
+
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  datasource:
+    url: jdbc:h2:file:~/test
+    username: postgres
+    password: postgres
+    driverClassName: org.h2.Driver
+  #    embedded-database-connection:
+
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect

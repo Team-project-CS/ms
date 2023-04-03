@@ -1,0 +1,31 @@
+server:
+  port: 8082
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  datasource:
+    url: jdbc:postgresql://localhost/postgres
+    username: postgres
+    password: 1
+  flyway:
+    url: jdbc:postgresql://localhost/postgres
+    user: postgres
+    password: 1
+    schemas: flyway
+    #enabled: false
+
+  jpa:
+    hibernate:
+    #ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+springfox:
+  documentation:
+    swagger-ui:
+      base-url: api-docs
+    swagger:
+      v2:
+        path: api-docs
