@@ -46,8 +46,8 @@ http://localhost:8080/ - simple UI
 
 We also managed to deploy the project. Here are some **probably** working links
 
-http://178.21.11.9/queue-docs/swagger-ui/index.html — q
+https://mock-project/queue-docs/swagger-ui/index.html — q
 
-http://178.21.11.9/api-docs/swagger-ui/index.html — api
+https://mock-project/api-docs/swagger-ui/index.html — api
 
-http://178.21.11.9/ - UI 
+https://mock-project/ - UI 

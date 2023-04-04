@@ -1,5 +1,5 @@
 const port = 8082;
-const apiUrl = `${location.protocol}//${location.hostname}:${port}`;
+const apiUrl = `${location.protocol}//${location.hostname}`;
 
 const endpointId = getParameterByName("endpointId");
 console.log(endpointId);
