@@ -1,5 +1,5 @@
 const port = 8081;
-const apiUrl = `${location.protocol}//${location.hostname}:${port}`;
+const apiUrl = `${location.protocol}//${location.hostname}`;
 
 function buildQueueCreationRequest() {
     var queueName = document.getElementById("queueName").value;
