@@ -26,7 +26,7 @@ your project and external services it uses.
 #### Launch script
 
 ```
-docker create network web
+docker network create web
 mvn clean package dockerfile:build -DskipTests=true
 docker-compose up -d
 ```
