@@ -12,16 +12,16 @@ jobs:
         run: docker rm -vf $(docker ps -aq)
       - name: Delete unused images
         run: docker rmi -f $(docker images -aq)
-      - name: Set up Maven
-        uses: stCarolas/setup-maven@v4.5
-        with:
-          maven-version: 3.8.2
   deploy:
     runs-on: self-hosted
     needs: prepare-environment
     if: always()
     steps:
       - uses: actions/checkout@v2
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v4.5
+        with:
+          maven-version: 3.8.2
       - name: Prepare new images
         run: mvn clean package dockerfile:build -DskipTests=true
       - name: docker-compose
