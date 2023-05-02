@@ -11,7 +11,7 @@ jobs:
       - name: Delete old containers
         run: docker rm -vf $(docker ps -aq)
       - name: Delete unused images
-        run: docker image prune -a
+        run: docker image prune -a -f
   deploy:
     runs-on: self-hosted
     needs: prepare-environment
