@@ -11,7 +11,7 @@ services:
     image: "postgres:alpine"
     container_name: db
     volumes:
-      - scrapper-data:/var/lib/postgresql/data
+      - mock-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     networks:
@@ -96,4 +96,4 @@ services:
           - rabbitmq
 
 volumes:
-  scrapper-data:
+  mock-data:

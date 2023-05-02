@@ -26,7 +26,7 @@ your project and external services it uses.
 #### Launch script
 
 ```
-docker create network web
+docker network create web
 mvn clean package dockerfile:build -DskipTests=true
 docker-compose up -d
 ```
@@ -46,8 +46,8 @@ http://localhost:8080/ - simple UI
 
 We also managed to deploy the project. Here are some **probably** working links
 
-https://mock-project.ru/queue-docs/swagger-ui/index.html — q
+http://24mock.ru/queue-docs/swagger-ui/index.html — q
 
-https://mock-project.ru/api-docs/swagger-ui/index.html — api
+http://24mock.ru/api-docs/swagger-ui/index.html — api
 
-https://mock-project.ru/ - UI 
+http://24mock.ru/ - UI 
